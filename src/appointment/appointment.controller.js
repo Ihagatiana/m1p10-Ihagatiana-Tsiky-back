@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 
 router.get("/", (req, res, next) => {
-  res.send("Auth base route");
+  res.send("Appointment base route");
 });
 
 module.exports = router;

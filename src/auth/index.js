@@ -4,4 +4,4 @@ const authController = require("./auth.controller");
 const authService = require("./auth.service");
 router.use(authController);
 
-module.exports = { router, service: authService };
+module.exports = { controller: router, service: authService };
