@@ -1,5 +1,6 @@
+require("dotenv-flow").config();
 const express = require("express");
-var app = express();
+const app = express();
 
 app.use("/auth", (req, res, next) => {
   const authModule = require("./src/auth");
@@ -13,6 +14,6 @@ app.use("/appointment", async (req, res, next) => {
   router(req, res, next);
 });
 
-app.listen(3000, () => {
-  console.log("Server is started on port 3000");
+app.listen(process.env.APP_PORT, () => {
+  console.log(`Server is started on port ${process.env.APP_PORT}`);
 });
