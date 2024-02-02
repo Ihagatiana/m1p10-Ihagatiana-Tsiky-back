@@ -1,7 +1,7 @@
 {
   "name": "m1p10-Ihagatiana-Tsiky-back",
   "scripts": {
-    "dev": "nodemon app.js --node-env=development"
+    "dev": "nodemon app.js "
   },
   "dependencies": {
     "dotenv-flow": "^4.1.0",
