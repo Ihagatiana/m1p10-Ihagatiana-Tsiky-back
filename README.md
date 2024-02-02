@@ -31,7 +31,10 @@ npm install
 
 ## Configuration
 
-No configuration is required. The database server URL:
+
+Do not touch .env create .env.local instead
+
+The database server URL:
 
 ```
 mongodb+srv://mb:toto@cluster0.5e6cs7n.mongodb.net/assignments?retryWrites=true&w=majority
@@ -44,4 +47,11 @@ To launch the application, run the following command:
 node server.js
 ```
 
-The application will then be executed and will be accessible at the address `http://localhost:8010` in your browser.
+To launch in dev mode, use : 
+```
+npm run dev
+```
+
+The application will then be executed and will be accessible at the address `http://localhost:3000` in your browser.
+
+
