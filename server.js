@@ -4,7 +4,7 @@ var express = require('express');
 var app = express();
 const mongoose = require('mongoose');
 
-mongoose.connect(process.env.DB_LINK||'mongodb://localhost:27017/beautysalon', { useNewUrlParser: true, useUnifiedTopology: true });
+db = mongoose.connect(process.env.DB_LINK||'mongodb://localhost:27017/beautysalon', { useNewUrlParser: true, useUnifiedTopology: true });
 
 // Pour accepter les connexions cross-domain (CORS)
 app.use(function (req, res, next) {
@@ -17,11 +17,6 @@ app.use(function (req, res, next) {
 
 app.use(express.json());
 app.use('/api',routes);
-
-
-app.get('/',function(req,res){
-    res.send('Okay');
-});
 
 console.log('Serveur démarré sur '+process.env.SERVER_LINK||'http://localhost:3000');
 app.listen(process.env.SERVER_PORT || 3000);
