@@ -7,6 +7,6 @@ const serviceSchema = new mongoose.Schema({
   commission: { type: Number, required: true }
 });
 
-const Service = mongoose.model('Service', serviceSchema);
+const service = mongoose.model('Service', serviceSchema);
 
-module.exports = Service;
+module.exports = service;
