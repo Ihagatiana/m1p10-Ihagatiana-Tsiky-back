@@ -3,11 +3,8 @@ const router = express.Router();
 const serviceService = require('./service.service');
 const mongoose = require('mongoose'); 
 
-  router.get("/", (req, res, next) => {
-    res.send("Appointment base route");
-  });
 
-  router.get("/all",async (req, res) => {
+  router.get("/",async (req, res) => {
       try {
         console.log('Ato');
         const services = await serviceService.getAllServices();
@@ -17,17 +14,7 @@ const mongoose = require('mongoose');
         res.status(500).json({ message: err.message });
       }
   });
-  router.get('/collections', async (req, res) => {
-    try {
-      const collections = await mongoose.connection.db.listCollections().toArray();
-      const collectionNames = collections.map(collection => collection.name);
-      res.json({ collections: collectionNames });
-    } catch (error) {
-      console.error('Error listing collections:', error);
-      res.status(500).json({ error: 'Internal Server Error' });
-    }
-  });
-  
+
   module.exports = router;
 
 
