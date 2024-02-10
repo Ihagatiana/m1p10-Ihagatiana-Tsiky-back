@@ -29,9 +29,9 @@ async function initializeApp() {
       router(req, res, next);
     });
 
-    app.use("/service", async (req, res, next) => {
-      const serviceController = require("./src/service/service.controller");
-      serviceController(req, res, next);
+    app.use("/services", async (req, res, next) => {
+      const servicesController = require("./src/services/services.controller");
+      servicesController(req, res, next);
     });
 
     app.listen(process.env.APP_PORT, () => {
