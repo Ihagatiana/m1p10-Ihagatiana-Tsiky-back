@@ -1,6 +1,6 @@
 const Services = require('./services.model');
 
-  const getAll =  async() => {
+  const findAll =  async() => {
     try {
       const services = await Services.find({});
       if (services) {
@@ -24,24 +24,51 @@ const Services = require('./services.model');
       }
       return services;
     } catch (error) {
-      console.error('Error finding services:', error);
+      throw new Error('Erreur finding services : ' + error);
     }
   };
-
-
-  const createService = async (req, res) => {
-    const { name, price, duration, description } = req.body;
   
+  const create = async ({name, price, duration, description}) => {
     try {
-      const newService = new Services({ name, price, duration, description });
+      const isUnique = await Services.findOne({ name });
+      if (isUnique) {
+        throw { code: 409, message: 'Service with this name already exists' };
+      }
+      const newService = new Services({name, price, duration, description});
       const savedService = await newService.save();
-  
-      return res.status(201).json({ success: true, service: savedService });
+      return savedService;
     } catch (error) {
-      console.error('Error creating service:', error);
-      return res.status(500).json({ success: false, message: 'Internal Server Error' });
+      throw error;
+    }
+  };
+
+  const updateById = async (serviceId, updateData) => {
+    try {
+      const updatedService = await Service.findByIdAndUpdate(serviceId, updateData, { new: true });
+      if (!updatedService) {
+        return null;
+      }
+      return updatedService;
+    } catch (error) {
+      throw new Error('Error updating service: ' + error.message);
+    }
+  };
+
+  const deleteById = async (req, res) => {
+    const serviceId = req.params.id;
+    try {
+      const deletedService = await servicesService.deleteService(serviceId);
+  
+      if (deletedService) {
+        res.status(200).json({ message: 'Service deleted successfully' });
+      } else {
+        res.status(404).json({ message: 'Service not found' });
+      }
+    } catch (error) {
+      console.error('Error deleting service:', error);
+      res.status(500).json({ message: 'Internal Server Error' });
     }
   };
 
 
-module.exports = {getAll,findOne};
+module.exports = {findAll,findOne,create,updateById,deleteById};

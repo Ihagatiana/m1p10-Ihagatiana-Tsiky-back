@@ -12,7 +12,7 @@ async function connectToDatabase() {
       
     } catch (error) {
       console.error('Error connecting to the database:', error.message);
-      throw error; // Renvoie l'erreur pour la gérer dans votre fichier app.js
+      throw error;
     }
   }
   
