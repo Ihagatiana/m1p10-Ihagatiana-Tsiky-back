@@ -1,3 +1,4 @@
+/*
 const Services = require('./services.model');
 
   const findAll =  async() => {
@@ -44,7 +45,7 @@ const Services = require('./services.model');
 
   const updateById = async (serviceId, updateData) => {
     try {
-      const updatedService = await Service.findByIdAndUpdate(serviceId, updateData, { new: true });
+      const updatedService = await Services.findByIdAndUpdate(serviceId, updateData, { new: true });
       if (!updatedService) {
         return null;
       }
@@ -54,11 +55,9 @@ const Services = require('./services.model');
     }
   };
 
-  const deleteById = async (req, res) => {
-    const serviceId = req.params.id;
+  const deleteById = async (serviceId) => {
     try {
-      const deletedService = await servicesService.deleteService(serviceId);
-  
+      const deletedService = await Services.deleteById(serviceId);
       if (deletedService) {
         res.status(200).json({ message: 'Service deleted successfully' });
       } else {
@@ -72,3 +71,4 @@ const Services = require('./services.model');
 
 
 module.exports = {findAll,findOne,create,updateById,deleteById};
+*/
