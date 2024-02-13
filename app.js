@@ -3,10 +3,9 @@ const db = require('./src/util/db.connect');
 const express = require("express");
 const app = express();
 
-// Utilisez une fonction asynchrone pour gérer l'initialisation
 async function initializeApp() {
   try {
-    await db.connectToDatabase(); // Attend que la connexion à la base de données soit établie
+    await db.connectToDatabase(); 
     app.use(express.json());
 
     app.use(function (req, res, next) {
@@ -20,12 +19,6 @@ async function initializeApp() {
     app.use("/auth", (req, res, next) => {
       const authModule = require("./src/auth");
       const router = authModule.controller;
-      router(req, res, next);
-    });
-
-    app.use("/appointment", async (req, res, next) => {
-      const appointmentModule = require("./src/appointment");
-      const router = appointmentModule.controller;
       router(req, res, next);
     });
 
