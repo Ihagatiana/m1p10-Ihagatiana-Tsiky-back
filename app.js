@@ -2,6 +2,8 @@ require("dotenv").config();
 const db = require('./src/util/db.connect');
 const express = require("express");
 const app = express();
+require("./src/images/images.model");
+
 
 async function initializeApp() {
   try {
@@ -28,7 +30,6 @@ async function initializeApp() {
       const servicesController = require("./src/services/services.controller");
       servicesController(req, res, next);
     });
-    console.log('eto ohh');
     app.listen(process.env.APP_PORT, () => {
       console.log(`Server is started on port ${process.env.APP_PORT}`);
     });

@@ -30,7 +30,8 @@
     try {
       const { name, price, duration, description } = req.body;
       const imageBuffers = req.files ? req.files.map(file => file.buffer) : null;
-      const newService = await servicesService.create(name, price, duration, description, imageBuffers,req);
+      const files = req.files;
+      const newService = await servicesService.create(name, price, duration, description, imageBuffers,files);
       res.status(201).send(newService);
     } catch (error) {
       console.error(error);
@@ -40,10 +41,17 @@
 
   router.put("/:id", upload.array('photos'), async (req, res) => {
     try {
-      const { id } = req.params;
-      const newPhotos = req.files ? req.files.map(file => file.buffer) : null;
-      const newData = req.body;
-      const updatedService = await servicesService.updateById(id, { ...newData, photos: newPhotos });
+      const serviceId = req.params.id;
+      const imagesBuffers = req.files ? req.files.map(file => file.buffer) : null; 
+      const otherServiceData = {
+        name: req.body.name,
+        price: req.body.price, 
+        duration: req.body.duration,
+        description: req.body.description
+      };
+      const file = req.files;
+
+      const updatedService =  await servicesService.updateById(serviceId, imagesBuffers, otherServiceData, file);
       res.status(200).send(updatedService);
     } catch (error) {
       console.error(error);
@@ -52,7 +60,6 @@
   });
 
   router.delete("/:id", async (req, res) => {
-    console.log('ato');
     const serviceId = req.params.id;
     try {
       const result = await servicesService.deleteById(serviceId);

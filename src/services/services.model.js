@@ -5,9 +5,9 @@ const servicesSchema = new mongoose.Schema({
   price: { type: Number, required: true },
   duration: { type: Number, required: true },
   description: { type: String, required: true },
-  road: [{ type: String, required: false }]
+  id_images: [{ type: mongoose.Schema.Types.ObjectId, ref: 'images', required: false }]
 });
 
 const services = mongoose.model('services', servicesSchema);
 
-module.exports = services;
+module.exports = services; 
