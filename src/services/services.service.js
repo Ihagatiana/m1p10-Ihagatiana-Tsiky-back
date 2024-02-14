@@ -1,17 +1,5 @@
 const Services = require('./services.model');
-const multer = require('multer');
-const path = require('path');
-
-  const storage = multer.diskStorage({
-    destination: function (req, file, cb) {
-      cb(null, './uploads');
-    },
-    filename: function (req, file, cb) {
-      cb(null, Date.now() + path.extname(file.originalname));
-    }
-  });
-
-  const upload = multer({ storage: storage });
+const fs = require('fs');
 
   const findAll =  async() => {
     try {
@@ -27,50 +15,63 @@ const path = require('path');
       const services = await Services.findById(servicesId);
       return services;
     } catch (error) {
-      throw new Error('Erreur finding services : ',error);
+      throw new Error('Error finding services : ',error);
     }
   };
   
-  const create = async(serviceData) => {
+  const create = async (name, price, duration, description, imageBuffers,req) => {
     try {
-      const newService = new Services(serviceData);
-      const isUnique = await Services.findOne({ name: serviceData.name });
-      if (isUnique) {
-        throw new Error('Service with this name already exists');
+      const existingService = await Services.findOne({ name });
+      if (existingService) {
+        throw new Error('Service name already exists.');
       }
-      const savedService = await newService.save();
-      return savedService;
+      const service = new Services({ name, price, duration, description });
+      if (imageBuffers && imageBuffers.length > 0) {
+        imageBuffers.forEach((imageBuffer, index) => {
+          const imageName = req.files[index].originalname;
+          const imagePath = 'src/services/uploads/'+imageName;
+          console.log('Image Name:', imageName);
+          console.log('Image Path:', imagePath);
+          fs.writeFileSync(imagePath, imageBuffer);
+          service.road.push(imagePath);
+        });
+      }
+      await service.save();
+      return service;
     } catch (error) {
-      throw new Error('Error creating service:',error.message);
+      throw error;
+    }
+  };
+  
+  
+  const updateById =async (serviceId, newData) => {
+    try {
+      const service = await Services.findById(serviceId);
+      if (!service) {
+        throw new Error('Service not found');
+      }
+      for (const key in newData) {
+        if (Object.prototype.hasOwnProperty.call(newData, key)) {
+          service[key] = newData[key];
+        }
+      }
+      await service.save();
+      return service;
+    } catch (error) {
+      throw new Error('Error updating service:' ,error.message);
     }
   }
 
-  const updateById =async (serviceId, updateData) => {
-    try {
-      if (updateData.road) {
-        const existingService = await Services.findById(serviceId);
-        existingService.road = updateData.road;
-        await existingService.save();
-      }
-      const updatedService = await Services.findByIdAndUpdate(serviceId, { ...updateData }, { new: true });
-      if (!updatedService) {
-        throw new Error('Service not found');
-      }
-      return updatedService;
-    } catch (error) {
-      throw new Error('Error updating service:', error.message);
-    }
-  };
-
   const deleteById = async (serviceId) => {
     try {
-      const deletedService = await servicesModel.deleteOne({ _id: serviceId });
+      const deletedService = await Services.deleteOne({ _id: serviceId });
+
       if (deletedService.deletedCount === 0) {
         throw new Error('Service not found');
       }
-      return { message: 'Service deleted successfully'};
+      return { message: 'Service deleted successfully' };
     } catch (error) {
-      throw new Error('Error deleting service:',error.message);
+      return { error: `Error deleting service: ${error.message}` };
     }
   };
 

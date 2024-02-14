@@ -8,6 +8,8 @@ async function initializeApp() {
     await db.connectToDatabase(); 
     app.use(express.json());
 
+    app.use('/src/services/uploads', express.static('src/services/uploads'));
+
     app.use(function (req, res, next) {
       res.header("Access-Control-Allow-Origin", "*");
       res.header("Access-Control-Allow-Credentials", true);
@@ -26,7 +28,7 @@ async function initializeApp() {
       const servicesController = require("./src/services/services.controller");
       servicesController(req, res, next);
     });
-
+    console.log('eto ohh');
     app.listen(process.env.APP_PORT, () => {
       console.log(`Server is started on port ${process.env.APP_PORT}`);
     });
