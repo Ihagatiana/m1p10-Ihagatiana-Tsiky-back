@@ -9,7 +9,7 @@ const saveImageToFolderAndDatabase = async (imagesBuffers, file) => {
         for (let index = 0; index < imagesBuffers.length; index++) {
           const imageBuffer = imagesBuffers[index];
           const imageName = file[index].originalname;
-          const imagePath = path.join('src/images/uploads', imageName);
+          const imagePath = path.join('src/util/images/uploads', imageName);
           console.log('Image Name:', imageName);
           console.log('Image Path:', imagePath);
           try {
