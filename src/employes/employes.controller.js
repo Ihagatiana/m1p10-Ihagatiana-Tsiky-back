@@ -26,19 +26,22 @@ router.get("/:id",async (req, res) => {
 });
 
 
+/*
 router.post('/', upload.array('photos'), async (req, res) => {
   try {
-    const { name, price, duration, description } = req.body;
+    const {name, firstname, startTime, endTime} = req.body;
+    const credentialsData = {};
     const imageBuffers = req.files ? req.files.map(file => file.buffer) : null;
     const files = req.files;
-    const newService = await servicesService.create(name, price, duration, description, imageBuffers,files);
-    res.status(201).send(newService);
+    const newEmployes = await employesService.create(req);
+    res.status(201).send(newEmployes);
   } catch (error) {
     console.error(error);
     res.status(500).send(error.message);
   }
 });
 
+/*
 router.put("/:id", upload.array('photos'), async (req, res) => {
   try {
     const employeId = req.params.id;
@@ -50,15 +53,14 @@ router.put("/:id", upload.array('photos'), async (req, res) => {
       endtime: req.body.endtime
     };
     const file = req.files;
-
-    const updatedEmploye =  await employesService.updateById(serviceId, imagesBuffers, otherServiceData, file);
+    const updatedEmploye =  await employesService.updateById(employeId, imagesBuffers, otherServiceData, file);
     res.status(200).send(updatedEmploye);
   } catch (error) {
     console.error(error);
     res.status(500).send('Error updating employe.');
   }
 });
-
+*/
 router.delete("/:id", async (req, res) => {
   const employeId = req.params.id;
   try {
@@ -66,7 +68,7 @@ router.delete("/:id", async (req, res) => {
     res.status(200).json({ message: 'Employe deleted successfully' });
   } catch (error) {
     console.error('Error deleting service:', error);
-    res.status(500).json({ message: 'Internal Server Error' });
+    res.status(500).json({ error: error.message });
   }
 });
 

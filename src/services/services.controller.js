@@ -1,7 +1,6 @@
   const express = require("express");
   const router = express.Router();
   const servicesService = require('./services.service');
-  const servicesModel = require('./services.model');
   const multer = require('multer');
 
   const storage = multer.memoryStorage();
@@ -30,7 +29,7 @@
     try {
       const { name, price, duration, description } = req.body;
       const imageBuffers = req.files ? req.files.map(file => file.buffer) : null;
-      const files = req.files;
+      const files = req.files; 
       const newService = await servicesService.create(name, price, duration, description, imageBuffers,files);
       res.status(201).send(newService);
     } catch (error) {
@@ -50,12 +49,11 @@
         description: req.body.description
       };
       const file = req.files;
-
       const updatedService =  await servicesService.updateById(serviceId, imagesBuffers, otherServiceData, file);
       res.status(200).send(updatedService);
     } catch (error) {
       console.error(error);
-      res.status(500).send('Error updating service.');
+      res.status(500).json({ error: error.message });
     }
   });
 
@@ -64,13 +62,11 @@
     try {
       const result = await servicesService.deleteById(serviceId);
       if (result.error) {
-        console.error(result.error);
         return res.status(500).json({ message: 'Internal Server Error' });
       }
       res.status(200).json({ message: 'Service deleted successfully' });
     } catch (error) {
-      console.error('Error deleting service:', error);
-      res.status(500).json({ message: 'Internal Server Error' });
+      res.status(500).json({ error: error.message });
     }
   });
 

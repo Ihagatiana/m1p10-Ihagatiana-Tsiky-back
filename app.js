@@ -4,13 +4,18 @@ const express = require("express");
 const app = express();
 require("./src/util/images/images.model");
 
+const multer = require('multer');
+const upload = multer();
+app.use(upload.none());
+
 
 async function initializeApp() {
   try {
     await db.connectToDatabase(); 
     app.use(express.json());
-
-    app.use('/src/util/images/uploads', express.static('/src/util/images/uploads'));
+    //app.use(express.static('./src/util/images/uploads'));
+    app.use('./src/util/images/uploads');
+    app.use(express.static('./src/util/images/uploads'));
 
     app.use(function (req, res, next) {
       res.header("Access-Control-Allow-Origin", "*");

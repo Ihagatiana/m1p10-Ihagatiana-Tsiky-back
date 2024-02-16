@@ -1,6 +1,7 @@
 const Employes = require('./employes.model');
 require('../credentials/credentials.model');
 const imagesService = require('../util/images/images.services');
+const credentialsService = require('../credentials/credentials.service');
 
   const findAll =  async() => {
     try {
@@ -20,14 +21,17 @@ const imagesService = require('../util/images/images.services');
     }
   };
 
-  const create = async  (name, firstname,credential, startTime, endTime, imagesBuffers,file) => {
+  const create = async (name, firstname, startTime, endTime, imagesBuffers, file, credentialsData) => {
+    const session = await mongoose.startSession();
+    session.startTransaction();
     try {
+      const credential = await credentialsService.create(credentialsData, { session });
       const photo = await imagesService.saveImageToFolderAndDatabase(imagesBuffers, file);
       const newEmployee = new Employes({
         name: name,
         firstname: firstname,
         photo: photo,
-        credential: credential,
+        credential: credential._id,
         starttime: {
           hours: startTime.hours,
           minutes: startTime.minutes
@@ -37,14 +41,32 @@ const imagesService = require('../util/images/images.services');
           minutes: endTime.minutes
         }
       });
-     
-      await newEmployee.save();
+      await newEmployee.save({ session });
+      await session.commitTransaction();
+      session.endSession();
       return newEmployee;
+    } catch (error) {
+      await session.abortTransaction();
+      session.endSession();
+      throw error;
+    }
+  };
+
+  const updateById = async (employeeId, updatedData) => {
+    try {
+
+      const nonEmptyFields = Object.entries(updatedData).reduce((acc, [key, value]) => {
+        if (value !== undefined && value !== null && value !== "") {
+          acc[key] = value;
+        }
+        return acc;
+      });
+      const updatedEmployee = await Employes.findByIdAndUpdate(employeeId, nonEmptyFields, { new: true });
+      return updatedEmployee;
     } catch (error) {
       throw error;
     }
   };
-  
 
   const deleteById = async (employeeId) => {
     try {
