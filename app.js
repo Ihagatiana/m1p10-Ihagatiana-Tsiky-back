@@ -4,9 +4,10 @@ const express = require("express");
 const app = express();
 require("./src/util/images/images.model");
 
+
 const multer = require('multer');
 const upload = multer();
-app.use(upload.none());
+//app.use(upload.none());
 
 
 async function initializeApp() {

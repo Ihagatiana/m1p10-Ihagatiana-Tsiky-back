@@ -39,6 +39,7 @@ const fs = require('fs');
   
   const updateById =async (serviceId, imagesBuffers, otherServiceData, file) => {
     try {
+
       const existingService = await Services.findById(serviceId);
       if (!existingService) {
         throw new Error('Service not found');
@@ -58,10 +59,11 @@ const fs = require('fs');
       if (otherServiceData.description) {
         existingService.description = otherServiceData.description;
       }
-      if (imagesBuffers.length >0){
+      if (imagesBuffers != null){
         const images = await imagesService.saveImageToFolderAndDatabase(imagesBuffers, file);
         existingService.images = images;
       }
+      console.log("Ato");
       await existingService.save();
       return existingService;
     } catch (error) {
