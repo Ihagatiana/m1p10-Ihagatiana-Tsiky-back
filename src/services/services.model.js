@@ -5,7 +5,7 @@ const servicesSchema = new mongoose.Schema({
   price: { type: Number, required: true },
   duration: { type: Number, required: true },
   description: { type: String, required: true },
-  id_images: [{ type: mongoose.Schema.Types.ObjectId, ref: 'images', required: false }]
+  images: [{ type: mongoose.Schema.Types.ObjectId, ref: 'images', required: false }]
 });
 
 const services = mongoose.model('services', servicesSchema);
