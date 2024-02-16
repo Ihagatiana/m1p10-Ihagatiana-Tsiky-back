@@ -13,9 +13,7 @@ async function initializeApp() {
   try {
     await db.connectToDatabase(); 
     app.use(express.json());
-    //app.use(express.static('./src/util/images/uploads'));
-    app.use('./src/util/images/uploads');
-    app.use(express.static('./src/util/images/uploads'));
+    app.use(express.static('./'));
 
     app.use(function (req, res, next) {
       res.header("Access-Control-Allow-Origin", "*");
