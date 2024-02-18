@@ -2,9 +2,9 @@ const express = require("express");
 const router = express.Router();
 const employesService = require('./employes.service');
 const employesModel = require('./employes.model');
-
-//const storage = multer.memoryStorage();
-//const upload = multer({ storage: storage }); 
+const multer = require('multer');
+const storage = multer.memoryStorage();
+const upload = multer({ storage: storage }); 
 
 router.get("/",async (req, res) => {
     try {
@@ -25,8 +25,6 @@ router.get("/:id",async (req, res) => {
   }
 });
 
-
-/*
 router.post('/', upload.array('photos'), async (req, res) => {
   try {
     const {name, firstname, startTime, endTime} = req.body;

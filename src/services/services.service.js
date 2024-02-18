@@ -63,7 +63,7 @@ const fs = require('fs');
         const images = await imagesService.saveImageToFolderAndDatabase(imagesBuffers, file);
         existingService.images = images;
       }
-      console.log("Ato");
+
       await existingService.save();
       return existingService;
     } catch (error) {
