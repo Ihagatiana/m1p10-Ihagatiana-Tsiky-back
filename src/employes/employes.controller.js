@@ -27,11 +27,10 @@ router.get("/:id",async (req, res) => {
 
 router.post('/', upload.array('photos'), async (req, res) => {
   try {
-    const {name, firstname, startTime, endTime} = req.body;
-    const credentialsData = {};
-    const imageBuffers = req.files ? req.files.map(file => file.buffer) : null;
+    const {name, firstname, starttime, endtime,credential} = req.body;
+    const imagesBuffers = req.files ? req.files.map(file => file.buffer) : null;
     const files = req.files;
-    const newEmployes = await employesService.create(req);
+    const newEmployes = await employesService.create(name, firstname, starttime, endtime, imagesBuffers, files, credential);
     res.status(201).send(newEmployes);
   } catch (error) {
     console.error(error);
@@ -39,26 +38,28 @@ router.post('/', upload.array('photos'), async (req, res) => {
   }
 });
 
-/*
+
 router.put("/:id", upload.array('photos'), async (req, res) => {
   try {
     const employeId = req.params.id;
     const imagesBuffers = req.files ? req.files.map(file => file.buffer) : null; 
-    const otherServiceData = {
+    const newEmployee = {
       name: req.body.name,
       firstname: req.body.firstname, 
       starttime: req.body.starttime,
-      endtime: req.body.endtime
+      endtime: req.body.endtime,
+      credential:req.body.credential
     };
     const file = req.files;
-    const updatedEmploye =  await employesService.updateById(employeId, imagesBuffers, otherServiceData, file);
+    const updatedEmploye =  await employesService.updateById(employeId,newEmployee,imagesBuffers,file);
     res.status(200).send(updatedEmploye);
   } catch (error) {
     console.error(error);
     res.status(500).send('Error updating employe.');
   }
 });
-*/
+
+
 router.delete("/:id", async (req, res) => {
   const employeId = req.params.id;
   try {

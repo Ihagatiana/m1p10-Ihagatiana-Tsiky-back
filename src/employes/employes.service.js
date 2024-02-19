@@ -1,4 +1,5 @@
 const Employes = require('./employes.model');
+const mongoose = require('mongoose');
 require('../credentials/credentials.model');
 const imagesService = require('../util/images/images.services');
 const credentialsService = require('../credentials/credentials.service');
@@ -52,16 +53,9 @@ const credentialsService = require('../credentials/credentials.service');
     }
   };
 
-  const updateById = async (employeeId, updatedData) => {
+  const updateById = async (employeeId, newEmployee) => {
     try {
-
-      const nonEmptyFields = Object.entries(updatedData).reduce((acc, [key, value]) => {
-        if (value !== undefined && value !== null && value !== "") {
-          acc[key] = value;
-        }
-        return acc;
-      });
-      const updatedEmployee = await Employes.findByIdAndUpdate(employeeId, nonEmptyFields, { new: true });
+      const updatedEmployee = await Employes.findByIdAndUpdate(employeeId, newEmployee, { new: true });
       return updatedEmployee;
     } catch (error) {
       throw error;

@@ -2,7 +2,6 @@ const express = require("express");
 const router = express.Router();
 const CredentialsServices = require('./credentials.service');
 const Credentials = require('./credentials.model');
-const { validateRequiredFields } = require('../middleware/validationMiddleware')
 
 router.get("/",async (req, res) => {
     try {
