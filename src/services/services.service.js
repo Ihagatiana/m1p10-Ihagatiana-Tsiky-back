@@ -2,6 +2,7 @@ const Services = require('./services.model');
 const imagesService = require('../util/images/images.services');
 
 const fs = require('fs');
+const { json } = require('express');
 
   const findAll =  async() => {
     try {
@@ -28,8 +29,9 @@ const fs = require('fs');
       if (existingService) {
         throw new Error('Service name already exists.');
       }
+      const durationParsed = JSON.parse(duration)
       const images = await imagesService.saveImageToFolderAndDatabase(imagesBuffers, file);
-      const service = new Services({ name, price, duration, description,images});
+      const service = new Services({ name, price, duration: durationParsed, description,images});
       await service.save();
       return service;
     } catch (error) {
