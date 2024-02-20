@@ -7,6 +7,6 @@ const clientsSchema = new mongoose.Schema({
   credential: [{ type: mongoose.Schema.Types.ObjectId, ref: 'credentials', required: false }],
 });
 
-const clients = mongoose.model('clients', servicesSchema);
+const clients = mongoose.model('clients', clientsSchema);
 
 module.exports = clients; 

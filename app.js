@@ -30,6 +30,11 @@ async function initializeApp() {
       router(req, res, next);
     });
 
+    app.use("/clients", async (req, res, next) => {
+      const clientsController = require("./src/clients/clients.controller");
+      clientsController(req, res, next);
+    });
+
     app.use("/services", async (req, res, next) => {
       const servicesController = require("./src/services/services.controller");
       servicesController(req, res, next);

@@ -4,10 +4,14 @@ require('../credentials/credentials.model');
 const imagesService = require('../util/images/images.services');
 const credentialsService = require('../credentials/credentials.service');
 
-  const findAll =  async() => {
+  const findAll =  async({ limit, offset }) => {
     try {
-      const employes = await Employes.find().populate('credential photo');
-      return employes;
+      const employes = await Employes.find()
+      .populate('credential photo')
+      .skip(offset)
+      .limit(limit);
+      const total = await Employes.count();
+      return { total, data: employes };
     } catch (error) {
       throw new Error('Error finding employes : ',error.message);
     }
@@ -62,9 +66,9 @@ const credentialsService = require('../credentials/credentials.service');
     }
   };
 
-  const deleteById = async (employeeId) => {
+  const deleteById = async (employeId) => {
     try {
-      const deletedEmploye = await Employes.deleteOne({ _id: employeeId });
+      const deletedEmploye = await Employes.deleteOne({ _id: employeId });
 
       if (deletedEmploye.deletedCount === 0) {
         throw new Error('Employe not found');
