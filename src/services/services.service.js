@@ -31,6 +31,7 @@ const create = async (
   price,
   duration,
   description,
+  comission,
   imagesBuffers,
   file
 ) => {
@@ -49,6 +50,7 @@ const create = async (
       price,
       duration: durationParsed,
       description,
+      comission,
       images,
     });
     await service.save();
@@ -75,6 +77,9 @@ const updateById = async (serviceId, imagesBuffers, otherServiceData, file) => {
     }
     if (otherServiceData.description) {
       existingService.description = otherServiceData.description;
+    }
+    if (otherServiceData.comission) {
+      existingService.comission = otherServiceData.comission;
     }
     if (otherServiceData.description) {
       existingService.description = otherServiceData.description;

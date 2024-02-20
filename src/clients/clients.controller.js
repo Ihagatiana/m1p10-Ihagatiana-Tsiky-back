@@ -30,18 +30,17 @@ router.get("/:id", async (req, res) => {
 
 router.post("/", upload.array("photos"), async (req, res) => {
   try {
-    const { name, price, duration, description } = req.body;
-    const imageBuffers = req.files
+    const { name, firstname,credential } = req.body;
+    const imagesBuffers = req.files
       ? req.files.map((file) => file.buffer)
       : null;
     const files = req.files;
     const newService = await clientsService.create(
       name,
-      price,
-      duration,
-      description,
-      imageBuffers,
-      files
+      firstname,
+      imagesBuffers,
+      files,
+      credential
     );
     res.status(201).send(newService);
   } catch (error) {
@@ -50,31 +49,25 @@ router.post("/", upload.array("photos"), async (req, res) => {
   }
 });
 
-router.put("/:id", upload.array("photos"), async (req, res) => {
-  try {
-    const serviceId = req.params.id;
-    const imagesBuffers = req.files
-      ? req.files.map((file) => file.buffer)
-      : null;
-    const otherServiceData = {
-      name: req.body.name,
-      price: req.body.price,
-      duration: req.body.duration,
-      description: req.body.description,
-    };
-    const file = req.files;
-    const updatedService = await clientsService.updateById(
-      serviceId,
-      imagesBuffers,
-      otherServiceData,
-      file
-    );
-    res.status(200).send(updatedService);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: error.message });
-  }
-});
+router.put("/:id", upload.array('photos'), async (req, res) => {
+    try {
+      const employeId = req.params.id;
+      const imagesBuffers = req.files ? req.files.map(file => file.buffer) : null; 
+      const newEmployee = {
+        name: req.body.name,
+        firstname: req.body.firstname, 
+        credential:req.body.credential
+      };
+      const file = req.files;
+      const updatedClients =  await clientsService.updateById(employeId,newEmployee);
+      res.status(200).send(updatedClients);
+    } catch (error) {
+      console.error(error);
+      res.status(500).send('Error updating clients.');
+    }
+  });
+  
+  
 
 router.delete("/:id", async (req, res) => {
   const serviceId = req.params.id;

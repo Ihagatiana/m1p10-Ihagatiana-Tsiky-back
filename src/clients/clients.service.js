@@ -38,6 +38,7 @@ const credentialsService = require('../credentials/credentials.service');
         photo: photo,
         credential: credential._id
       });
+      console.log('tonga eto 2');
       await newclients.save({ session });
       await session.commitTransaction();
       session.endSession();
@@ -51,7 +52,7 @@ const credentialsService = require('../credentials/credentials.service');
 
   const updateById = async (clientsId, newclients) => {
     try {
-      const updatedclients = await Clients.findByIdAndUpdate(clientsId, newclients, { new: true });
+      const updatedclients = await Clients.findByIdAndUpdate(clientsId, newclients,{ new: true });
       return updatedclients;
     } catch (error) {
       throw error;

@@ -30,7 +30,7 @@ router.get("/:id", async (req, res) => {
 
 router.post("/", upload.array("photos"), async (req, res) => {
   try {
-    const { name, price, duration, description } = req.body;
+    const { name, price, duration, description,comission } = req.body;
     const imageBuffers = req.files
       ? req.files.map((file) => file.buffer)
       : null;
@@ -40,6 +40,7 @@ router.post("/", upload.array("photos"), async (req, res) => {
       price,
       duration,
       description,
+      comission,
       imageBuffers,
       files
     );
@@ -60,6 +61,7 @@ router.put("/:id", upload.array("photos"), async (req, res) => {
       name: req.body.name,
       price: req.body.price,
       duration: req.body.duration,
+      comission:req.body.comission,
       description: req.body.description,
     };
     const file = req.files;
