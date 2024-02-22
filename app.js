@@ -30,6 +30,11 @@ async function initializeApp() {
       router(req, res, next);
     });
 
+    app.use("/email", async (req, res, next) => {
+      const mailController = require("./src/email/email.controller");
+      mailController(req, res, next);
+    });
+
     app.use("/clients", async (req, res, next) => {
       const clientsController = require("./src/clients/clients.controller");
       clientsController(req, res, next);
@@ -40,12 +45,18 @@ async function initializeApp() {
       servicesController(req, res, next);
     });
 
+    app.use("/appservices", async (req, res, next) => {
+      const appservicesController = require("./src/appservices/appservices.controller");
+      appservicesController(req, res, next);
+    });
+
     app.use("/employes", async (req, res, next) => {
       const employesController = require("./src/employes/employes.controller");
       employesController(req, res, next);
     });
 
     app.use("/credentials", async (req, res, next) => {
+      console.log('azerty');
       const credentialsController = require("./src/credentials/credentials.controller");
       credentialsController(req, res, next);
     });

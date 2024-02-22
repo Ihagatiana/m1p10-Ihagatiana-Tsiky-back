@@ -38,7 +38,6 @@ const credentialsService = require('../credentials/credentials.service');
         photo: photo,
         credential: credential._id
       });
-      console.log('tonga eto 2');
       await newclients.save({ session });
       await session.commitTransaction();
       session.endSession();
