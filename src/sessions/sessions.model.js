@@ -6,7 +6,8 @@ const sessionsSchema = new mongoose.Schema({
   token: { type: String, required: true },
   date: { type: String, required: true },
   name: { type: String, required: true },
-  photo: [{ type: mongoose.Schema.Types.ObjectId, ref: 'images', required: false }]
+  photo: [{ type: mongoose.Schema.Types.ObjectId, ref: 'images', required: false }],
+  roles: { type: String, enum:  ['manager', 'client', 'employe'], default: 'client' }
 });
 
 const Sessions = mongoose.model('sessions', sessionsSchema);

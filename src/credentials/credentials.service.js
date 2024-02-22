@@ -47,6 +47,7 @@ const jwt = require("jsonwebtoken");
             date: expirationDate.toISOString(),
             name,
             photo,
+            roles:user.roles
           });
           await session.save();
           return session;
