@@ -2,11 +2,19 @@ const AppServices = require('./appservices.model');
 require('../appointments/appointments.model');
 require('../services/services.model');
 require('../employes/employes.model');
+require('../clients/clients.model');
 
     const findAll =  async({ limit, offset }) => {
         try {
         const appservices = await AppServices.find()
-        .populate('appointments services employes')
+        .populate({
+          path: 'appointments',
+          populate: {
+            path: 'clients',
+            model: 'clients'
+          }
+        })
+        .populate('services employes')
         .skip(offset)
         .limit(limit);
         const total = await AppServices.count();
@@ -19,6 +27,14 @@ require('../employes/employes.model');
     const findById = async (servAppId) => {
         try {
         const appservices = await AppServices.findById(servAppId)
+        .populate({
+          path: 'appointments',
+          populate: {
+            path: 'clients',
+            model: 'clients'
+          }
+        })
+        .populate('services employes');
         return appservices;
         } catch (error) {
         throw new Error('Error finding Appointment Services : ',error);

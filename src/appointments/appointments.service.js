@@ -1,11 +1,13 @@
-const Appointment = require('./appointment.model');
+const Appointment = require('./appointments.model');
+require('../clients/clients.model');
 
     const findAll =  async() => {
         try {
         const appointment = await Appointment.find()
+        .populate('clients');
         return appointment;
         } catch (error) {   
-        throw new Error('Erreur finding appointment : ',error.message);
+        throw error;
         }
     }
 

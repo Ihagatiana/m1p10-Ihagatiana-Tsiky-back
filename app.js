@@ -30,6 +30,12 @@ async function initializeApp() {
       router(req, res, next);
     });
 
+    app.use("/appointments", async (req, res, next) => {
+      const appointmentsController = require("./src/appointments/appointments.controller");
+      appointmentsController(req, res, next);
+    });
+
+
     app.use("/email", async (req, res, next) => {
       const mailController = require("./src/email/email.controller");
       mailController(req, res, next);
