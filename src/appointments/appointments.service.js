@@ -24,7 +24,7 @@ require('../clients/clients.model');
         try {
           const newappointment = new Appointment(appointmentData);
           const savedappointment = await newappointment.save();
-          return { total, data: savedappointment };
+          return savedappointment;
         } catch (error) {
           throw error;
         }
