@@ -8,7 +8,7 @@ const servicesSchema = new mongoose.Schema({
     minutes: { type: Number, required: true }
   },
   description: { type: String, required: true },
-  commission : {type:Number, required: true },
+  comission : {type:Number, required: true },
   images: [{ type: mongoose.Schema.Types.ObjectId, ref: 'images', required: false }]
 });
 
