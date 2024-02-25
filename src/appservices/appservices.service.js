@@ -1,6 +1,8 @@
 const AppServices = require('./appservices.model');
 const appointmentServices = require('../appointments/appointments.service');
 const mongoose = require('mongoose');
+const serviceServices = require('../services/services.service');
+const time = require('../util/Time');
 
 require('../appointments/appointments.model');
 require('../services/services.model');
@@ -48,23 +50,25 @@ require('../clients/clients.model');
     const create = async (appointmentData, appServiceDataList) => {
       const session = await mongoose.startSession();
       session.startTransaction();
-    
       try {
         const app = await appointmentServices.create(appointmentData, { session });
         const appServiceDatafinal = [];
+        let durationOrder = { hours: 0, minutes: 0 };
         if (Array.isArray(appServiceDataList) && appServiceDataList.length > 0) {
           for (let i = 0; i < appServiceDataList.length; i++) {
             const appServiceData = appServiceDataList[i];  
             
             const appointments= new mongoose.Types.ObjectId(app);
             const services = new mongoose.Types.ObjectId(appServiceData.services);
+            const serviceduration = await serviceServices.findById(appServiceData.services);
+            durationOrder = time.addTime(durationOrder,serviceduration.duration);
             const employes = new mongoose.Types.ObjectId(appServiceData.employes);
-            const starttime = appServiceData.starttime;
-            const endtime = appServiceData.endtime;
-            isEmployeeAvailable(appServiceData.date,appointmentData.date,starttime,endtime);  
+            const val = await getTime(appointmentData, appServiceDataList,appServiceData,serviceduration.duration,durationOrder);
+            const starttime =  val.starttime;
+            const endtime = val.endtime;
+            await isEmployeeAvailable (employes,appointmentData.date, starttime, endtime);
             appServiceDatafinal.push({appointments,services,employes,starttime,endtime});
           }
-
           await AppServices.insertMany(appServiceDatafinal, { session });
         }
     
@@ -79,7 +83,20 @@ require('../clients/clients.model');
         throw error;
       }
     };
-    
+
+    const getTime = async(appointmentData, appServiceDataList,appServiceData,serviceduration,durationOrder) =>{
+      if(appServiceData.order==1){
+        return {
+          "starttime":appointmentData.starttime,
+          "endtime":time.addTime(appointmentData.starttime,serviceduration)
+        }
+      }else if(appServiceData.order>1){
+        return {
+          "starttime":time.addTime(appointmentData.starttime,time.subtractTime(durationOrder,serviceduration)),
+          "endtime":time.addTime(appointmentData.starttime,durationOrder)
+        }
+      }
+    }
 
     const updateById = async (appointmentId, updatedData)=> {
         try {
@@ -96,7 +113,7 @@ require('../clients/clients.model');
         }
     }
   
-    const deleteById = async () => {
+    const deleteById = async (appointmentId) => {
         try {
         const deletedServApp = await AppServices.deleteOne({ _id: appointmentId });
         if (deletedServApp.deletedCount === 0) {
@@ -130,18 +147,16 @@ require('../clients/clients.model');
             }
           ]
         });
-
         console.log(existingAppointment);
-    
         if (existingAppointment) {
           throw new Error(`L'employé avec l'ID ${employeeId} n'est pas disponible à l'heure du rendez-vous le ${date}.`);
         }
-    
-        return true; // True if the employee is available
+        return true;
       } catch (error) {
         throw error;
       }
     };
     
+
 
   module.exports = {findAll,findById,create,updateById,deleteById};
