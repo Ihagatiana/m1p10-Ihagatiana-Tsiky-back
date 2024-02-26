@@ -5,7 +5,9 @@
     },
     "name": "Iasmine",
     "firstname": "Deila",
-    "photo": ["src\\util\\images\\uploads\\iasmine.PNG"], 
+    "photo": {
+      "$oid": "65ccca852fc58b0ca2c12131"
+    },
     "starttime": {
       "hours": 8,
       "minutes": 0
@@ -26,7 +28,9 @@
     },
     "name": "Andrea",
     "firstname": "Denise",
-    "photo": ["src\\util\\images\\uploads\\andrea.PNG"], 
+    "photo": {
+      "$oid": "65ccca852fc58b0ca2c12132"
+    }, 
     "starttime": {
       "hours": 8,
       "minutes": 0
@@ -47,7 +51,9 @@
     },
     "name": "Lidia",
     "firstname": "Marie",
-    "photo": ["src\\util\\images\\uploads\\lidia.PNG"], 
+    "photo": {
+      "$oid": "65ccca852fc58b0ca2c12133"
+    }, 
     "starttime": {
       "hours": 8,
       "minutes": 0
