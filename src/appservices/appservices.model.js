@@ -11,7 +11,8 @@ const appservicesSchema = new mongoose.Schema({
   endtime: { 
     hours: { type: Number, required: true },
     minutes: { type: Number, required: true }
-   }
+   },
+  order:{ type: Number, required: true }
 });
 
 const appServices = mongoose.model('appservices', appservicesSchema);

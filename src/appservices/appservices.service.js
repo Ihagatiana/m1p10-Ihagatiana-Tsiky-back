@@ -4,11 +4,10 @@ const mongoose = require('mongoose');
 const serviceServices = require('../services/services.service');
 const time = require('../util/Time');
 
-require('../appointments/appointments.model');
+const Appointments = require('../appointments/appointments.model');
 require('../services/services.model');
-require('../employes/employes.model');
+const Employes = require('../employes/employes.model');
 require('../clients/clients.model');
-
 
     const findAll =  async({ limit, offset }) => {
         try {
@@ -54,6 +53,9 @@ require('../clients/clients.model');
         const app = await appointmentServices.create(appointmentData, { session });
         const appServiceDatafinal = [];
         let durationOrder = { hours: 0, minutes: 0 };
+
+        appServiceDataList  = appServiceDataList.sort((a, b) => a.order - b.order);
+
         if (Array.isArray(appServiceDataList) && appServiceDataList.length > 0) {
           for (let i = 0; i < appServiceDataList.length; i++) {
             const appServiceData = appServiceDataList[i];  
@@ -63,11 +65,17 @@ require('../clients/clients.model');
             const serviceduration = await serviceServices.findById(appServiceData.services);
             durationOrder = time.addTime(durationOrder,serviceduration.duration);
             const employes = new mongoose.Types.ObjectId(appServiceData.employes);
-            const val = await getTime(appointmentData, appServiceDataList,appServiceData,serviceduration.duration,durationOrder);
+            const val = await getTime(appointmentData,appServiceData,serviceduration.duration,durationOrder);
             const starttime =  val.starttime;
             const endtime = val.endtime;
+            const order = appServiceData.order
+            console.log("employes==>",employes);
+            console.log("appointmentData.date==>",appointmentData.date);
+            console.log("starttime==>",starttime);
+            console.log("endtime==>",endtime);
+            
             await isEmployeeAvailable (employes,appointmentData.date, starttime, endtime);
-            appServiceDatafinal.push({appointments,services,employes,starttime,endtime});
+            appServiceDatafinal.push({appointments,services,employes,starttime,endtime,order});
           }
           await AppServices.insertMany(appServiceDatafinal, { session });
         }
@@ -84,7 +92,7 @@ require('../clients/clients.model');
       }
     };
 
-    const getTime = async(appointmentData, appServiceDataList,appServiceData,serviceduration,durationOrder) =>{
+    const getTime = async(appointmentData,appServiceData,serviceduration,durationOrder) =>{
       if(appServiceData.order==1){
         return {
           "starttime":appointmentData.starttime,
@@ -126,37 +134,43 @@ require('../clients/clients.model');
     };
 
     const isEmployeeAvailable = async (employeeId,date, startTime, endTime) => {
+      const emp = new mongoose.Types.ObjectId(employeeId);
       try {
-        const existingAppointment = await AppServices.findOne({
-          employes: new mongoose.Types.ObjectId(employeeId),
+        const appService = await AppServices.findOne({
+          employes: emp,
           $or: [
             {
               starttime: { $gte: startTime, $lt: endTime },
-              date: date
             },
             {
               endtime: { $gt: startTime, $lte: endTime },
-              date: date
             },
             {
               $and: [
                 { starttime: { $lte: startTime } },
                 { endtime: { $gte: endTime } },
-                { date: date }
               ]
             }
           ]
         });
-        console.log(existingAppointment);
-        if (existingAppointment) {
-          throw new Error(`L'employé avec l'ID ${employeeId} n'est pas disponible à l'heure du rendez-vous le ${date}.`);
+        if (!appService) {
+          return true; 
+        }
+        const appointmentId = appService.appointments;
+        const appointment = await Appointments.findOne({
+          _id: new mongoose.Types.ObjectId(appointmentId),
+          date: date 
+        });
+        const employe = await Employes.findById(emp);
+        if (appointment) {
+          const message_error = "L'employé "+employe.name+" n'est pas disponible à l'heure du rendez-vous le "+date+" entre "+startTime.hours+"h"+startTime.minutes+"min à "+endTime.hours +"h"+endTime.minutes+"min";
+          throw new Error(message_error);
         }
         return true;
       } catch (error) {
         throw error;
       }
     };
-    
 
 
   module.exports = {findAll,findById,create,updateById,deleteById};
