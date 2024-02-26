@@ -54,4 +54,15 @@ npm run dev
 
 The application will then be executed and will be accessible at the address `http://localhost:3000` in your browser.
 
+##login
+-client: 
+    user:jonh@gmail.com
+    pwd:pwd123
 
+-employee: 
+    user:andrea@gmail.com
+    pwd:pwd123
+
+-manager: 
+    user:doni@gmail.com
+    pwd:pwd123
