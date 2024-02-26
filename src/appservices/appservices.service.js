@@ -5,7 +5,7 @@ const serviceServices = require('../services/services.service');
 const time = require('../util/Time');
 
 const Appointments = require('../appointments/appointments.model');
-require('../services/services.model');
+const Services = require('../services/services.model');
 const Employes = require('../employes/employes.model');
 require('../clients/clients.model');
 
@@ -52,7 +52,6 @@ require('../clients/clients.model');
       try {
         const app = await appointmentServices.create(appointmentData, { session });
         const appServiceDatafinal = [];
-        let durationOrder = { hours: 0, minutes: 0 };
 
         appServiceDataList  = appServiceDataList.sort((a, b) => a.order - b.order);
 
@@ -63,9 +62,8 @@ require('../clients/clients.model');
             const appointments= new mongoose.Types.ObjectId(app);
             const services = new mongoose.Types.ObjectId(appServiceData.services);
             const serviceduration = await serviceServices.findById(appServiceData.services);
-            durationOrder = time.addTime(durationOrder,serviceduration.duration);
             const employes = new mongoose.Types.ObjectId(appServiceData.employes);
-            const val = await getTime(appointmentData,appServiceData,serviceduration.duration,durationOrder);
+            const val = await getTime(appointmentData,appServiceData,appServiceDataList,serviceduration.duration);
             const starttime =  val.starttime;
             const endtime = val.endtime;
             const order = appServiceData.order
@@ -92,18 +90,35 @@ require('../clients/clients.model');
       }
     };
 
-    const getTime = async(appointmentData,appServiceData,serviceduration,durationOrder) =>{
+    const getTime = async(appointmentData,appServiceData,appServiceDataList,serviceduration) =>{
       if(appServiceData.order==1){
         return {
           "starttime":appointmentData.starttime,
           "endtime":time.addTime(appointmentData.starttime,serviceduration)
         }
       }else if(appServiceData.order>1){
+        durationBefore = await getDurationBefore(appServiceData,appServiceDataList);
+        let timesstart = time.addTime(appointmentData.starttime,durationBefore);
         return {
-          "starttime":time.addTime(appointmentData.starttime,time.subtractTime(durationOrder,serviceduration)),
-          "endtime":time.addTime(appointmentData.starttime,durationOrder)
+          "starttime": timesstart,
+          "endtime":time.addTime(timesstart,serviceduration)
         }
       }
+    }
+
+    const getDurationBefore= async(appServiceData2,appServiceDataList) =>{
+      let initial = { hours: 0, minutes: 0 }; 
+      let val;
+      if (Array.isArray(appServiceDataList) && appServiceDataList.length > 0) {
+        for (let i = 0; i < appServiceDataList.length; i++) {
+            const appServiceData = appServiceDataList[i];  
+            if(appServiceData.order<appServiceData2.order){
+              let appserv = await Services.findById(appServiceData.services);
+              val = time.addTime(initial,appserv.duration);
+            } 
+        }
+      }
+      return val;
     }
 
     const updateById = async (appointmentId, updatedData)=> {
