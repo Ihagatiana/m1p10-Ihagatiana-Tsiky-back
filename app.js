@@ -3,12 +3,12 @@ const db = require('./src/util/db.connect');
 const express = require("express");
 const app = express();
 require("./src/util/images/images.model");
-
-
+const cron = require('node-cron');
+const email = require('./src/email/email.services')
+const moment = require('moment-timezone');
 const multer = require('multer');
 const upload = multer();
 //app.use(upload.none());
-
 
 async function initializeApp() {
   try {
@@ -22,6 +22,16 @@ async function initializeApp() {
       res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept , authorization ");
       res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
       next();
+    });
+
+    moment.tz.setDefault('Indian/Antananarivo');
+
+    cron.schedule('17 12 * * *', async () => {
+      try {
+        await email.sendmail();
+      } catch (error) {
+        console.error('Erreur lors de la vérification des rendez-vous et de l\'envoi des e-mails :', error);
+      }
     });
 
     app.use("/auth", (req, res, next) => {

@@ -1,4 +1,4 @@
-  {
+  [{
     "_id": {
       "$oid": "65d60f6acd8ff0ad9658e4d8"
     },
@@ -18,7 +18,8 @@
       "endtime": {
         "hours": 9,
         "minutes": 30
-    }
+    },
+    "order":2
   }
 
   {
@@ -41,5 +42,7 @@
     "endtime": {
         "hours": 10,
         "minutes": 30
-    }
+    },
+    "order":1
   }
+]

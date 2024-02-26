@@ -48,9 +48,9 @@
         }
 
         main img {
-            max-width: 100%; /* Assurez-vous que l'image ne dépasse pas la largeur du conteneur */
-            border-radius: 10px; /* Ajoutez une bordure arrondie à l'image */
-            margin-bottom: 15px; /* Ajoutez une marge en bas de l'image */
+            max-width: 100%;
+            border-radius: 10px; 
+            margin-bottom: 15px;
         }
 
         footer {
@@ -73,15 +73,16 @@
 <body>
     <div class="container">
         <header>
-            <h1>Welcome to Beaty Salon</h1>
+            <h1>Bienvenue sur {{company}}</h1>
         </header>
         <main>
-            <p>Hello <strong>{{name}}</strong>,</p>
-            <p>Thank you for joining <em>{{company}}</em>.Don't forget your appointment with us for 22/02/2024</p>
+            <p>Bonjour <strong>{{name}}</strong>,</p>
+            <p>Merci de nous rejoindre sur <em>{{company}}</em>
+            .N'oubliez pas votre rendez-vous avec nous le {{date}} à {{starttime}}</p>
         </main>
 
         <footer>
-            <p>&copy; 2024 My Company. All rights reserved. Made with <span style="color: #ff0000;">&hearts;</span></p>
+            <p>&copy; 2024  {{company}}. All rights reserved. Made with <span style="color: #ff0000;">&hearts;</span></p>
         </footer>
     </div>
 </body>
