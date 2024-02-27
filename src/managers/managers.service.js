@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 require('../credentials/credentials.model');
 const imagesService = require('../util/images/images.services');
 const credentialsService = require('../credentials/credentials.service');
+const bcrypt = require("bcrypt");
 
   const findAll =  async({ limit, offset }) => {
     try {
