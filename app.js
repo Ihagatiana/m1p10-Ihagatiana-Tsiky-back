@@ -80,7 +80,6 @@ async function initializeApp() {
     });
 
     app.use("/credentials", async (req, res, next) => {
-      console.log("azerty");
       const credentialsController = require("./src/credentials/credentials.controller");
       credentialsController(req, res, next);
     });

@@ -12,10 +12,6 @@ const jwt = require("jsonwebtoken");
     const login =  async(email,password) => {
       try {
         const user = await Credentials.findOne({ email });
-        
-        console.log("comparaison",password);
-        console.log("et",user.password);
-
         if (user && bcrypt.compareSync(password, user.password)) {
           console.log('ato2');
           const token = jwt.sign({ userId: user._id }, 'keyJwt', { expiresIn: '1h' });
@@ -52,7 +48,7 @@ const jwt = require("jsonwebtoken");
           await session.save();
           return session;
         }else{
-          throw new Error('Erreur finding credential');
+          throw new Error('Email ou Mot de passe incorrect');
         }
       } catch (error) {
         throw error; 
