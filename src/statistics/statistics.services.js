@@ -1,38 +1,37 @@
 const appServices = require("./../appservices/appservices.model");
-
+const Appointment = require("./../appointments/appointments.model");
+const generateDatesForYear = (year) => {
+  const dates = [];
+  for (let month = 1; month <= 12; month++) {
+    const formattedMonth = month < 10 ? `0${month}` : `${month}`;
+    dates.push(`${year}-${formattedMonth}`);
+  }
+  return dates;
+};
 const getAppointementByDate = async () => {
-  return await appServices.aggregate([
-    {
-      $lookup: {
-        from: "appointments",
-        localField: "appointments",
-        foreignField: "_id",
-        as: "appointmentDetails",
+  const year = 2024;
+
+  const dates = generateDatesForYear(year);
+
+  const appServicesByMonth = [];
+
+  for (const date of dates) {
+    const [year, month] = date.split("-");
+    const startOfMonth = new Date(year, parseInt(month) - 1, 1);
+    const endOfMonth = new Date(year, parseInt(month), 0, 23, 59, 59, 999);
+
+    const servicesCount = await appServices.countDocuments({
+      appointments: {
+        $in: await Appointment.find({
+          date: { $gte: startOfMonth, $lt: endOfMonth },
+        }).distinct("_id"),
       },
-    },
-    {
-      $unwind: "$appointmentDetails",
-    },
-    {
-      $addFields: {
-        appointmentDate: {
-          $dateToString: {
-            format: "%Y-%m-%d",
-            date: "$appointmentDetails.date",
-          },
-        },
-      },
-    },
-    {
-      $group: {
-        _id: "$appointmentDate",
-        count: { $sum: 1 }, // Compte le nombre d'éléments pour chaque date de rendez-vous
-      },
-    },
-    {
-      $sort: { _id: 1 },
-    },
-  ]);
+    });
+
+    appServicesByMonth.push({ date, numberOfServices: servicesCount });
+  }
+
+  return appServicesByMonth;
 };
 
 const getEmployeStatistical = async () => {
@@ -170,5 +169,5 @@ const getEmployeStatistical = async () => {
 module.exports = {
   getEmployeStatistical,
   getAppointementByDate,
-//   getHoursWorkedByEmploye,
+  //   getHoursWorkedByEmploye,
 };
