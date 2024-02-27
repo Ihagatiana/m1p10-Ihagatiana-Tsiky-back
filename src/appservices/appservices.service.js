@@ -69,15 +69,15 @@ require('../clients/clients.model');
             const order = appServiceData.order
             const employee = await Employes.findById(employes);
             const empdetail = { "starttime": employee.starttime,"endtime": employee.endtime }; 
-
-            console.log("appdetail=>"+appdetail);
-            console.log("empdetail=>"+empdetail);
+            const states = appServiceData.states;
 
             await isAppointmentWithinWorkingHours(appdetail,empdetail);
             await isEmployeeAvailable (employes,appointmentData.date, starttime, endtime);
-            appServiceDatafinal.push({appointments,services,employes,starttime,endtime,order});
+            appServiceDatafinal.push({appointments,services,employes,starttime,endtime,order,states});
           }
           await AppServices.insertMany(appServiceDatafinal, { session });
+        }else{
+          throw new Error("Veuillez choisir un service s'il vous plâit");
         }
     
         console.log(appServiceDatafinal);
@@ -87,11 +87,10 @@ require('../clients/clients.model');
         return appServiceDatafinal;
       } catch (error) {
         await session.abortTransaction();
-        session.endSession();
+        session.endSession(); 
         throw error;
       }
     };
-
 
     const getTime = async(appointmentData,appServiceData,appServiceDataList,serviceduration) =>{
       if(appServiceData.order==1){
@@ -130,7 +129,7 @@ require('../clients/clients.model');
 
       const workingStartTime =  time.convertToNumber(employee.starttime);
       const workingEndTime =  time.convertToNumber(employee.endtime);
-    
+
       // Vérifier si l'heure de début du rendez-vous est avant l'heure de début de travail
       if (time.compareTimes(appointmentStartTime, workingStartTime) === -1) {
         throw new Error(`Erreur : L'employé travaille de ${time.formatTime(workingStartTime)} à ${time.formatTime(workingEndTime)}. Le rendez-vous ne peut pas commencer avant ${time.formatTime(workingStartTime)}.`);
@@ -142,21 +141,39 @@ require('../clients/clients.model');
       }
     };
 
-    const updateById = async (appointmentId, updatedData)=> {
-        try {
-        const existingAppServ = await AppServices.findById(appointmentId);
-        Object.keys(updatedData).forEach(key => {
-            if (updatedData[key] !== undefined) {
-              existingservApp[key] = updatedData[key];
-            }
-        });
-        const updatedAppServ = await existingAppServ.save();
-        return updatedAppServ;
-        } catch (error) {
+    /*
+    const updateById = async (appointmentId,appointmentData,appServiceDataList) => {
+      const session = await mongoose.startSession();
+      session.startTransaction();
+      try {
+        const idapp= new mongoose.Types.ObjectId(appointmentId);
+        const existingAppointment = await Appointments.findById(idapp);
+        if (!existingAppointment) {
+          throw new Error("Aucune rendez vous trouver");
+        } 
+        console.log("existingAppointment=>"+existingAppointment);
+        console.log("appointmentData=>"+appointmentData);
+
+        Object.assign(existingAppointment, appointmentData);
+        await existingAppointment.save({ session });
+
+        const app = await appointmentServices.create(appointmentData, { session });
+        const appServiceDatafinal = [];
+
+
+        console.log(appServiceDatafinal);
+        await session.commitTransaction();
+        session.endSession();
+    
+        return appServiceDatafinal;
+      } catch (error) {
+        await session.abortTransaction();
+        session.endSession(); 
         throw error;
-        }
-    }
-  
+      }
+    };
+  */
+ 
     const deleteById = async (appointmentId) => {
         try {
         const deletedServApp = await AppServices.deleteOne({ _id: appointmentId });
@@ -169,7 +186,10 @@ require('../clients/clients.model');
         }
     };
 
-    const isEmployeeAvailable = async (employeeId,date, startTime, endTime) => {
+    const isEmployeeAvailable = async (employeeId,date, stTime, edTime) => {
+      const startTime = time.convertToNumber(stTime);
+      const endTime = time.convertToNumber(edTime);
+
       const emp = new mongoose.Types.ObjectId(employeeId);
       try {
         const appService = await AppServices.findOne({

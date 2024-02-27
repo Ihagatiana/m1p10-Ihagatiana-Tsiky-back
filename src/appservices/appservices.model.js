@@ -12,7 +12,8 @@ const appservicesSchema = new mongoose.Schema({
     hours: { type: Number, required: true },
     minutes: { type: Number, required: true }
    },
-  order:{ type: Number, required: true }
+  order:{ type: Number, required: true },
+  states:{ type: Number, required: true }
 });
 
 const appServices = mongoose.model('appservices', appservicesSchema);

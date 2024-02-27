@@ -6,8 +6,7 @@ const appointmentsSchema = new mongoose.Schema({
   starttime: {
     hours: { type: Number, required: true },
     minutes: { type: Number, required: true }
-  },
-  state: { type: Number, required: true }
+  }
 });
 
 const Appointments = mongoose.model('appointments', appointmentsSchema);
