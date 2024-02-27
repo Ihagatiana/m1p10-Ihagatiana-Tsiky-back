@@ -30,6 +30,7 @@ const credentialsService = require('../credentials/credentials.service');
     const session = await mongoose.startSession();
     session.startTransaction();
     try {
+      credentialsData.password =  bcrypt.hashSync(credentialsData.password, 10);
       const credential = await credentialsService.create(credentialsData, { session });
       const photo = await imagesService.saveImageToFolderAndDatabase(imagesBuffers, file);
       const newmanagers = new Managers({

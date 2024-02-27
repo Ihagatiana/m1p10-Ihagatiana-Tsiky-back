@@ -122,6 +122,20 @@ require('../clients/clients.model');
       }
       return val;
     }
+    
+    const validate = async (idAppointmentTab) => {
+      if (Array.isArray(idAppointmentTab) && idAppointmentTab.length > 0) {
+        for (let i = 0; i < idAppointmentTab.length; i++) {
+          const servAppId = idAppointmentTab[i];
+          const appservices = await AppServices.findById(new mongoose.Types.ObjectId(servAppId));
+          if (appservices) {
+            appservices.states = 11;
+            await appservices.save();
+          }
+        }
+      }
+    }
+    
 
     const isAppointmentWithinWorkingHours = (appointment, employee) => {
       const appointmentStartTime = time.convertToNumber(appointment.starttime);
@@ -229,4 +243,4 @@ require('../clients/clients.model');
     };
 
 
-  module.exports = {findAll,findById,create,updateById,deleteById};
+  module.exports = {findAll,findById,create,updateById,deleteById,validate};
