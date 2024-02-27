@@ -5,6 +5,7 @@ const employesModel = require("./employes.model");
 const multer = require("multer");
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
+const bcrypt = require("bcrypt");
 
 router.get("/", async (req, res) => {
   try {
@@ -57,6 +58,8 @@ router.post("/", upload.array("photos"), async (req, res) => {
 router.put("/:id", upload.array("photos"), async (req, res) => {
   try {
     const employeId = req.params.id;
+    const credential =  req.body.credential;
+    credential.password = bcrypt.hashSync(credentialsData.password,10);
     const imagesBuffers = req.files
       ? req.files.map((file) => file.buffer)
       : null;
@@ -65,7 +68,7 @@ router.put("/:id", upload.array("photos"), async (req, res) => {
       firstname: req.body.firstname,
       starttime: req.body.starttime,
       endtime: req.body.endtime,
-      credential: req.body.credential,
+      credential: credential,
     };
     const file = req.files;
     const updatedEmploye = await employesService.updateById(
