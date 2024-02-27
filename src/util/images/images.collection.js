@@ -18,6 +18,34 @@
       } 
 ]
 
+// employees 
+[
+    {
+        "_id": {
+            "$oid": "65ccca852fc58b0ca2c12131"
+        },
+        "name": "iasmine.PNG",
+        "url": "src\\util\\images\\uploads\\iasmine.PNG",
+        "mimetype": "image/png"
+    },
+    {
+        "_id": {
+            "$oid": "65ccca852fc58b0ca2c12132"
+        },
+        "name": "andrea.PNG",
+        "url": "src\\util\\images\\uploads\\andrea.PNG",
+        "mimetype": "image/png"
+    },
+    {
+        "_id": {
+            "$oid": "65ccca852fc58b0ca2c12133"
+        },
+        "name": "lidia.PNG",
+        "url": "src\\util\\images\\uploads\\lidia.PNG",
+        "mimetype": "image/png"
+    }    
+]
+
 // services (massage,coiffure,manicure,pedicure,maquillage,soinvisage)
 [
     {
@@ -32,7 +60,7 @@
         "_id": {
             "$oid": "65ccca852fc58b0ca2c13112"
         },
-        "name": "massage.PNG",
+        "name": "coiffure.PNG",
         "url": "src\\util\\images\\uploads\\coiffure.PNG",
         "mimetype": "image/png"
     },
@@ -40,7 +68,7 @@
         "_id": {
             "$oid": "65ccca852fc58b0ca2c14113"
         },
-        "name": "massage.PNG",
+        "name": "manicure.PNG",
         "url": "src\\util\\images\\uploads\\manicure.PNG",
         "mimetype": "image/png"
     },
@@ -48,7 +76,7 @@
         "_id": {
             "$oid": "65ccca852fc58b0ca2c15114"
         },
-        "name": "massage.PNG",
+        "name": "pedicure.PNG",
         "url": "src\\util\\images\\uploads\\pedicure.PNG",
         "mimetype": "image/png"
     },
@@ -56,7 +84,7 @@
         "_id": {
             "$oid": "65ccca852fc58b0ca2c11115"
         },
-        "name": "massage.PNG",
+        "name": "maquillage.PNG",
         "url": "src\\util\\images\\uploads\\maquillage.PNG",
         "mimetype": "image/png"
     },
@@ -64,7 +92,7 @@
         "_id": {
             "$oid": "65ccca852fc58b0ca2c12116"
         },
-        "name": "massage.PNG",
+        "name": "soinvisage.PNG",
         "url": "src\\util\\images\\uploads\\soinvisage.PNG",
         "mimetype": "image/png"
     }

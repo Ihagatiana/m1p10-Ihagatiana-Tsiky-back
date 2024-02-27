@@ -63,15 +63,17 @@ require('../clients/clients.model');
             const services = new mongoose.Types.ObjectId(appServiceData.services);
             const serviceduration = await serviceServices.findById(appServiceData.services);
             const employes = new mongoose.Types.ObjectId(appServiceData.employes);
-            const val = await getTime(appointmentData,appServiceData,appServiceDataList,serviceduration.duration);
-            const starttime =  val.starttime;
-            const endtime = val.endtime;
+            let appdetail = await getTime(appointmentData,appServiceData,appServiceDataList,serviceduration.duration);
+            const starttime =  appdetail.starttime;
+            const endtime = appdetail.endtime;
             const order = appServiceData.order
-            console.log("employes==>",employes);
-            console.log("appointmentData.date==>",appointmentData.date);
-            console.log("starttime==>",starttime);
-            console.log("endtime==>",endtime);
-            
+            const employee = await Employes.findById(employes);
+            const empdetail = { "starttime": employee.starttime,"endtime": employee.endtime }; 
+
+            console.log("appdetail=>"+appdetail);
+            console.log("empdetail=>"+empdetail);
+
+            await isAppointmentWithinWorkingHours(appdetail,empdetail);
             await isEmployeeAvailable (employes,appointmentData.date, starttime, endtime);
             appServiceDatafinal.push({appointments,services,employes,starttime,endtime,order});
           }
@@ -89,6 +91,7 @@ require('../clients/clients.model');
         throw error;
       }
     };
+
 
     const getTime = async(appointmentData,appServiceData,appServiceDataList,serviceduration) =>{
       if(appServiceData.order==1){
@@ -120,6 +123,24 @@ require('../clients/clients.model');
       }
       return val;
     }
+
+    const isAppointmentWithinWorkingHours = (appointment, employee) => {
+      const appointmentStartTime = time.convertToNumber(appointment.starttime);
+      const appointmentEndTime =  time.convertToNumber(appointment.endtime);
+
+      const workingStartTime =  time.convertToNumber(employee.starttime);
+      const workingEndTime =  time.convertToNumber(employee.endtime);
+    
+      // Vérifier si l'heure de début du rendez-vous est avant l'heure de début de travail
+      if (time.compareTimes(appointmentStartTime, workingStartTime) === -1) {
+        throw new Error(`Erreur : L'employé travaille de ${time.formatTime(workingStartTime)} à ${time.formatTime(workingEndTime)}. Le rendez-vous ne peut pas commencer avant ${time.formatTime(workingStartTime)}.`);
+      }
+
+      // Vérifier si l'heure de fin du rendez-vous est après l'heure de fin de travail
+      if (time.compareTimes(appointmentEndTime, workingEndTime) === 1) {
+        throw new Error( `Erreur : L'employé travaille de ${time.formatTime(workingStartTime)} à ${time.formatTime(workingEndTime)}. Le rendez-vous ne peut pas se terminer après ${time.formatTime(workingEndTime)}.`);
+      }
+    };
 
     const updateById = async (appointmentId, updatedData)=> {
         try {
