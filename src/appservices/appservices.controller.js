@@ -31,12 +31,8 @@ router.post("/",async (req, res) => {
   const appointmentData = {
     date: req.body.date,  
     clients: new mongoose.Types.ObjectId(req.body.clients),        
-    starttime: req.body.starttime,
-    state : 1
+    starttime: req.body.starttime
   }
-  
-  console.log(appointmentData);
-  
   const appServiceDataList = req.body.appservices;
   try {
     const appservices =  await appservicesService.create(appointmentData,appServiceDataList);
@@ -47,6 +43,23 @@ router.post("/",async (req, res) => {
   }
 });
 
-
+/*
+router.put("/",async (req, res) => {
+  const appointmentId = req.params.id;
+  const appointmentData = {
+    date: req.body.date,  
+    clients: new mongoose.Types.ObjectId(req.body.clients),        
+    starttime: req.body.starttime
+  }
+  const appServiceDataList = req.body.appservices;
+  try {
+    const appservices =  await appservicesService.updateById(appointmentId,appointmentData,appServiceDataList);
+    res.status(200).json(appservices);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: err.message });
+  }
+});
+*/
 
 module.exports = router;

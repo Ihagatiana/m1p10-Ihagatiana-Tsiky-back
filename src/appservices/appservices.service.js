@@ -63,19 +63,21 @@ require('../clients/clients.model');
             const services = new mongoose.Types.ObjectId(appServiceData.services);
             const serviceduration = await serviceServices.findById(appServiceData.services);
             const employes = new mongoose.Types.ObjectId(appServiceData.employes);
-            const val = await getTime(appointmentData,appServiceData,appServiceDataList,serviceduration.duration);
-            const starttime =  val.starttime;
-            const endtime = val.endtime;
+            let appdetail = await getTime(appointmentData,appServiceData,appServiceDataList,serviceduration.duration);
+            const starttime =  appdetail.starttime;
+            const endtime = appdetail.endtime;
             const order = appServiceData.order
-            console.log("employes==>",employes);
-            console.log("appointmentData.date==>",appointmentData.date);
-            console.log("starttime==>",starttime);
-            console.log("endtime==>",endtime);
-            
+            const employee = await Employes.findById(employes);
+            const empdetail = { "starttime": employee.starttime,"endtime": employee.endtime }; 
+            const states = appServiceData.states;
+
+            await isAppointmentWithinWorkingHours(appdetail,empdetail);
             await isEmployeeAvailable (employes,appointmentData.date, starttime, endtime);
-            appServiceDatafinal.push({appointments,services,employes,starttime,endtime,order});
+            appServiceDatafinal.push({appointments,services,employes,starttime,endtime,order,states});
           }
           await AppServices.insertMany(appServiceDatafinal, { session });
+        }else{
+          throw new Error("Veuillez choisir un service s'il vous plâit");
         }
     
         console.log(appServiceDatafinal);
@@ -85,7 +87,7 @@ require('../clients/clients.model');
         return appServiceDatafinal;
       } catch (error) {
         await session.abortTransaction();
-        session.endSession();
+        session.endSession(); 
         throw error;
       }
     };
@@ -121,21 +123,57 @@ require('../clients/clients.model');
       return val;
     }
 
-    const updateById = async (appointmentId, updatedData)=> {
-        try {
-        const existingAppServ = await AppServices.findById(appointmentId);
-        Object.keys(updatedData).forEach(key => {
-            if (updatedData[key] !== undefined) {
-              existingservApp[key] = updatedData[key];
-            }
-        });
-        const updatedAppServ = await existingAppServ.save();
-        return updatedAppServ;
-        } catch (error) {
+    const isAppointmentWithinWorkingHours = (appointment, employee) => {
+      const appointmentStartTime = time.convertToNumber(appointment.starttime);
+      const appointmentEndTime =  time.convertToNumber(appointment.endtime);
+
+      const workingStartTime =  time.convertToNumber(employee.starttime);
+      const workingEndTime =  time.convertToNumber(employee.endtime);
+
+      // Vérifier si l'heure de début du rendez-vous est avant l'heure de début de travail
+      if (time.compareTimes(appointmentStartTime, workingStartTime) === -1) {
+        throw new Error(`Erreur : L'employé travaille de ${time.formatTime(workingStartTime)} à ${time.formatTime(workingEndTime)}. Le rendez-vous ne peut pas commencer avant ${time.formatTime(workingStartTime)}.`);
+      }
+
+      // Vérifier si l'heure de fin du rendez-vous est après l'heure de fin de travail
+      if (time.compareTimes(appointmentEndTime, workingEndTime) === 1) {
+        throw new Error( `Erreur : L'employé travaille de ${time.formatTime(workingStartTime)} à ${time.formatTime(workingEndTime)}. Le rendez-vous ne peut pas se terminer après ${time.formatTime(workingEndTime)}.`);
+      }
+    };
+
+    /*
+    const updateById = async (appointmentId,appointmentData,appServiceDataList) => {
+      const session = await mongoose.startSession();
+      session.startTransaction();
+      try {
+        const idapp= new mongoose.Types.ObjectId(appointmentId);
+        const existingAppointment = await Appointments.findById(idapp);
+        if (!existingAppointment) {
+          throw new Error("Aucune rendez vous trouver");
+        } 
+        console.log("existingAppointment=>"+existingAppointment);
+        console.log("appointmentData=>"+appointmentData);
+
+        Object.assign(existingAppointment, appointmentData);
+        await existingAppointment.save({ session });
+
+        const app = await appointmentServices.create(appointmentData, { session });
+        const appServiceDatafinal = [];
+
+
+        console.log(appServiceDatafinal);
+        await session.commitTransaction();
+        session.endSession();
+    
+        return appServiceDatafinal;
+      } catch (error) {
+        await session.abortTransaction();
+        session.endSession(); 
         throw error;
-        }
-    }
-  
+      }
+    };
+  */
+ 
     const deleteById = async (appointmentId) => {
         try {
         const deletedServApp = await AppServices.deleteOne({ _id: appointmentId });
@@ -148,7 +186,10 @@ require('../clients/clients.model');
         }
     };
 
-    const isEmployeeAvailable = async (employeeId,date, startTime, endTime) => {
+    const isEmployeeAvailable = async (employeeId,date, stTime, edTime) => {
+      const startTime = time.convertToNumber(stTime);
+      const endTime = time.convertToNumber(edTime);
+
       const emp = new mongoose.Types.ObjectId(employeeId);
       try {
         const appService = await AppServices.findOne({
