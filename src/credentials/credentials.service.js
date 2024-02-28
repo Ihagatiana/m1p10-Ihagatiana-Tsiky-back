@@ -2,7 +2,7 @@ const Credentials = require("./credentials.model");
 
 const Employes = require("../employes/employes.model");
 const Clients = require("../clients/clients.model");
-
+require("dotenv").config();
 const Session = require("../sessions/sessions.model");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
@@ -17,7 +17,7 @@ const login = async (email, password) => {
 
     if (user && bcrypt.compareSync(password, user.password)) {
       console.log("ato2");
-      const token = jwt.sign({ userId: user._id }, "keyJwt", {
+      const token = jwt.sign({ userId: user._id },process.env.jwt, {
         expiresIn: "1h",
       });
 

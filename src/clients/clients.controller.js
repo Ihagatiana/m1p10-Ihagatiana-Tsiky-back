@@ -6,7 +6,7 @@ const multer = require("multer");
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
 const bcrypt = require("bcrypt");
-
+const authenticateSession = require('../sessions/sessions.middleware');
 router.get("/", async (req, res) => {
   try {
     const clients = await clientsService.findAll({
@@ -19,7 +19,7 @@ router.get("/", async (req, res) => {
   }
 });
 
-router.get("/appservices/:id", async (req, res) => {
+router.get("/appservices/:id",async (req, res) => {
   try {
     const paginationQuery = {
       limit: req.query?.limit,
