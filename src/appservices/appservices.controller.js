@@ -27,7 +27,7 @@ router.get("/:id",async (req, res) => {
 });
 
 router.post("/",async (req, res) => {
-
+  console.log(req.body.clients);
   const appointmentData = {
     date: req.body.date,  
     clients: new mongoose.Types.ObjectId(req.body.clients),        

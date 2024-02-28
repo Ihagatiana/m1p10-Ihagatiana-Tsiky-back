@@ -17,9 +17,7 @@
       "minutes": 30
     },
     "credential": {
-      "_id": {
         "$oid": "65dce3a4fce982525fde0f90"
-      }
     }
   },
   {
@@ -40,9 +38,7 @@
       "minutes": 30
     },
     "credential": {
-      "_id": {
         "$oid": "65dce3a4fce982525fde0f8f"
-      }
     }
   },
   {
@@ -63,9 +59,7 @@
       "minutes": 30
     },
     "credential": {
-      "_id": {
         "$oid": "65dce3a4fce982525fde0f8e"
-      }
     }
   }
 ]
