@@ -58,7 +58,7 @@ const login = async (email, password) => {
       await session.save();
       return { session, profile_id };
     } else {
-      throw new Error("Erreur finding credential");
+      throw new Error("Email ou Mot de passe incorrect");
     }
   } catch (error) {
     throw error;

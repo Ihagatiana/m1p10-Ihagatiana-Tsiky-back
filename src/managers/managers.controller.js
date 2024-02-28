@@ -4,6 +4,7 @@ const managersService = require("./managers.service");
 const multer = require("multer");
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
+const bcrypt = require("bcrypt");
 
 router.get("/", async (req, res) => {
   try {
@@ -51,11 +52,13 @@ router.post("/", upload.array("photos"), async (req, res) => {
 router.put("/:id", upload.array('photos'), async (req, res) => {
     try {
       const managersId = req.params.id;
+      const credential =  req.body.credential;
+      credential.password = bcrypt.hashSync(credential.password,10);
       const imagesBuffers = req.files ? req.files.map(file => file.buffer) : null; 
       const newmanagers = {
         name: req.body.name,
         firstname: req.body.firstname, 
-        credential:req.body.credential
+        credential:credential
       };
       const file = req.files;
       const updatedmanagers =  await managersService.updateById(managersId,newmanagers);

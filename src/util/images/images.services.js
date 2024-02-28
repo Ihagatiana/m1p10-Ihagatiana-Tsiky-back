@@ -16,7 +16,7 @@ const saveImageToFolderAndDatabase = async (imagesBuffers, file) => {
           const imageId = uuidv4();
           const imageFileName = `${imageId}${fileExtension}`;
 
-          const imagePath = path.join('src/util/images/uploads', imageFileName);
+          const imagePath = path.join('src/util/images/uploads'+imageFileName);
           console.log('Image Name:', imageFileName);
           console.log('Image Path:', imagePath);
           try {

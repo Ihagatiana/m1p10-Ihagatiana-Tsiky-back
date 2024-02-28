@@ -4,6 +4,7 @@ require("../credentials/credentials.model");
 const imagesService = require("../util/images/images.services");
 const credentialsService = require("../credentials/credentials.service");
 const AppService = require("../appservices/appservices.model");
+const bcrypt = require("bcrypt");
 
 const findAppServicesByEmpId = async (query, { offset, limit }) => {
   const data = await AppService.find(query)
@@ -58,6 +59,7 @@ const create = async (
   const session = await mongoose.startSession();
   session.startTransaction();
   try {
+      credentialsData.password =  bcrypt.hashSync(credentialsData.password, 10);
     const credential = await credentialsService.create(credentialsData, {
       session,
     });

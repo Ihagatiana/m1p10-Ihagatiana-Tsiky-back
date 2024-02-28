@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const CredentialsServices = require('./credentials.service');
 const Credentials = require('./credentials.model');
+const bcrypt = require("bcrypt");
 
 router.get("/",async (req, res) => {
     try {
@@ -20,7 +21,7 @@ router.post('/login',async (req, res) => {
     const session = await CredentialsServices.login(email,password);
     res.status(200).json(session);
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    res.status(401).json({ message: err.message });
   }
 });
 
