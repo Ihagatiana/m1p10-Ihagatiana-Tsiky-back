@@ -19,6 +19,26 @@ router.get("/", async (req, res) => {
   }
 });
 
+router.get("/appservices/:id", async (req, res) => {
+  try {
+    const paginationQuery = {
+      limit: req.query?.limit,
+      offset: req.query?.offset,
+    };
+    const employeId = req.params.id;
+
+    const appService = await employesService.findAppServicesByEmpId(
+      {
+        employes: employeId,
+      },
+      paginationQuery
+    );
+    res.status(200).json(appService);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
 router.get("/:id", async (req, res) => {
   const employesId = req.params.id;
   try {
