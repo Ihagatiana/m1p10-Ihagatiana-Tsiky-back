@@ -32,7 +32,7 @@ async function initializeApp() {
 
     moment.tz.setDefault("Indian/Antananarivo");
 
-    cron.schedule("17 12 * * *", async () => {
+    cron.schedule("8 00 * * *", async () => {
       try {
         await email.sendmail();
       } catch (error) {
@@ -53,6 +53,12 @@ async function initializeApp() {
       const appointmentsController = require("./src/appointments/appointments.controller");
       appointmentsController(req, res, next);
     });
+
+    app.use("/payments", async (req, res, next) => {
+      const paymentsController = require("./src/payments/payments.controller");
+      paymentsController(req, res, next);
+    });
+
 
     app.use("/email", async (req, res, next) => {
       const mailController = require("./src/email/email.controller");

@@ -124,17 +124,25 @@ require('../clients/clients.model');
     }
     
     const validate = async (idAppointmentTab) => {
-      if (Array.isArray(idAppointmentTab) && idAppointmentTab.length > 0) {
-        for (let i = 0; i < idAppointmentTab.length; i++) {
-          const servAppId = idAppointmentTab[i];
-          const appservices = await AppServices.findById(new mongoose.Types.ObjectId(servAppId));
-          if (appservices) {
-            appservices.states = 11;
-            await appservices.save();
+      try {
+        if (Array.isArray(idAppointmentTab) && idAppointmentTab.length > 0) {
+          for (let i = 0; i < idAppointmentTab.length; i++) {
+            const servAppId = idAppointmentTab[i];
+            const appservices = await AppServices.findById(new mongoose.Types.ObjectId(servAppId));
+            if (appservices) {
+              appservices.states = 11;
+              await appservices.save();
+            }
           }
+          return { success: true, message: 'La validation a été effectuée avec succès.' };
+        } else {
+          return { success: false, message: 'Aucun ID d\'appointment fourni.' };
         }
+      } catch (error) {
+        return { success: false, message: 'Erreur lors de la validation : ' + error.message };
       }
-    }
+    };
+    
     
 
     const isAppointmentWithinWorkingHours = (appointment, employee) => {

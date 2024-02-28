@@ -44,10 +44,10 @@ router.post("/",async (req, res) => {
 });
 
 router.put("/validate",async (req, res) => {
-  const idAppointmentTab =  JSON.parse(req.body.idappointment);
+  const idAppointmentTab =  req.body.appointmentIds;
   try {
-    const appservices =  await appservicesService.validate(idAppointmentTab);
-    res.status(200).json(appservices);
+    const result =  await appservicesService.validate(idAppointmentTab);
+    res.status(200).json({ message: result.message});
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: err.message });
