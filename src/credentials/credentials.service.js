@@ -8,7 +8,6 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
 
-
     const login =  async(email,password) => {
       try {
         const user = await Credentials.findOne({ email });
@@ -57,6 +56,18 @@ const jwt = require("jsonwebtoken");
         throw error; 
       }
     }
+    
+    const logout = async (token) => {
+      try {
+        const session = await Session.findOneAndDelete({ token });
+        if (!session) {
+          throw new Error('Session introuvable');
+        }
+        return { message: 'Déconnexion réussie' };
+      } catch (error) {
+        throw error;
+      }
+    };
     
 
     const findAll =  async() => {
@@ -114,4 +125,5 @@ const jwt = require("jsonwebtoken");
         }
     };
 
-  module.exports = {login,findAll,findById,create,updateById,deleteById};
+
+  module.exports = {logout,login,findAll,findById,create,updateById,deleteById};

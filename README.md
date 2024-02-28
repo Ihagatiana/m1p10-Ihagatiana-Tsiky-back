@@ -56,7 +56,7 @@ The application will then be executed and will be accessible at the address `htt
 
 ##login
 -client: 
-    user:jonh@gmail.com
+    user:john@example.com
     pwd:pwd123
 
 -employee: 
