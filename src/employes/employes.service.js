@@ -13,16 +13,17 @@ const credentialsService = require('../credentials/credentials.service');
       const total = await Employes.count();
       return { total, data: employes };
     } catch (error) {
-      throw new Error('Error finding employes : ',error.message);
+      throw new Error('Employé introuvable: ',error.message);
     }
   }
 
   const findById = async (employesId) => {
     try {
+      
       const employes = await Employes.findById(employesId).populate('credential photo');
       return employes;
     } catch (error) {
-      throw new Error('Error finding employes : ',error);
+      throw new Error('Employé introuvable: ',error);
     }
   };
 
