@@ -19,6 +19,25 @@ router.get("/", async (req, res) => {
   }
 });
 
+router.get("/appservices/:id", async (req, res) => {
+  try {
+    const paginationQuery = {
+      limit: req.query?.limit,
+      offset: req.query?.offset,
+    };
+    const clientId = req.params.id;
+
+    const appServices = await clientsService.getAppServices(
+      clientId ? { _id: clientId } : {},
+      paginationQuery
+    );
+    res.status(200).json(appServices);
+
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
 router.get("/:id", async (req, res) => {
   const clientsId = req.params.id;
   try {
@@ -31,7 +50,7 @@ router.get("/:id", async (req, res) => {
 
 router.post("/", upload.array("photos"), async (req, res) => {
   try {
-    const { name, firstname,credential } = req.body;
+    const { name, firstname, credential } = req.body;
     const imagesBuffers = req.files
       ? req.files.map((file) => file.buffer)
       : null;
