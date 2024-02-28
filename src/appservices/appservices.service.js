@@ -243,4 +243,4 @@ require('../clients/clients.model');
     };
 
 
-  module.exports = {findAll,findById,create,updateById,deleteById,validate};
+  module.exports = {findAll,findById,create,deleteById,validate};

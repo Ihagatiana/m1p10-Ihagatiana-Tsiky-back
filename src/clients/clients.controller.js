@@ -54,7 +54,7 @@ router.put("/:id", upload.array('photos'), async (req, res) => {
     try {
       const employeId = req.params.id;
       const credential =  req.body.credential;
-      credential.password = bcrypt.hashSync(credentialsData.password,10);
+      credential.password = bcrypt.hashSync(credential.password,10);
       const imagesBuffers = req.files ? req.files.map(file => file.buffer) : null; 
       const newEmployee = {
         name: req.body.name,

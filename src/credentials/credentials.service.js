@@ -13,7 +13,6 @@ const jwt = require("jsonwebtoken");
       try {
         const user = await Credentials.findOne({ email });
         if (user && bcrypt.compareSync(password, user.password)) {
-          console.log('ato2');
           const token = jwt.sign({ userId: user._id }, 'keyJwt', { expiresIn: '1h' });
 
           const expirationDate = new Date();
@@ -23,15 +22,19 @@ const jwt = require("jsonwebtoken");
 
           if (user.roles === 'manager') {
               const managerDetails = await Managers.findOne({ credential: user._id });
+              console.log("Managers connecter");
               name = managerDetails.name;
               photo = managerDetails.photo;
           } else if (user.roles === 'employe') {
             console.log(user._id);
               const employeDetails = await Employes.findOne({ credential: user._id });
+              console.log("Employes connecter");
+              console.log(employeDetails);
               name = employeDetails.name;
               photo = employeDetails.photo;
           } else {
               const clientDetails = await Clients.findOne({ credential: user._id });
+              console.log("Clients connecter");
               name = clientDetails.name;
               photo = clientDetails.photo;
           }
