@@ -2,6 +2,7 @@ const Credentials = require('./credentials.model');
 
 const Employes = require('../employes/employes.model');
 const Clients = require('../clients/clients.model');
+require('../util/images/images.model');
 
 const Session = require('../sessions/sessions.model');
 const bcrypt = require("bcrypt");
@@ -20,19 +21,19 @@ const jwt = require("jsonwebtoken");
           let photo = [];
 
           if (user.roles === 'manager') {
-              const managerDetails = await Managers.findOne({ credential: user._id });
+              const managerDetails = await Managers.findOne({ credential: user._id }).populate('images');
               console.log("Managers connecter");
               name = managerDetails.name;
               photo = managerDetails.photo;
           } else if (user.roles === 'employe') {
             console.log(user._id);
-              const employeDetails = await Employes.findOne({ credential: user._id });
+              const employeDetails = await Employes.findOne({ credential: user._id }).populate('images');
               console.log("Employes connecter");
               console.log(employeDetails);
               name = employeDetails.name;
               photo = employeDetails.photo;
           } else {
-              const clientDetails = await Clients.findOne({ credential: user._id });
+              const clientDetails = await Clients.findOne({ credential: user._id }).populate('images');
               console.log("Clients connecter");
               name = clientDetails.name;
               photo = clientDetails.photo;
