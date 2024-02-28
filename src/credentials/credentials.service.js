@@ -6,6 +6,7 @@ const Clients = require("../clients/clients.model");
 const Session = require("../sessions/sessions.model");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+require('../util/images/images.model');
 
 const login = async (email, password) => {
   try {
@@ -27,19 +28,19 @@ const login = async (email, password) => {
       let profile_id = "";
 
       if (user.roles === "manager") {
-        const managerDetails = await Managers.findOne({ credential: user._id });
+        const managerDetails = await Managers.findOne({ credential: user._id }).populate('photo');
         name = managerDetails.name;
         profile_id = managerDetails._id;
         photo = managerDetails.photo;
       } else if (user.roles === "employe") {
         console.log(user._id);
-        const employeDetails = await Employes.findOne({ credential: user._id });
+        const employeDetails = await Employes.findOne({ credential: user._id }).populate('photo');
         name = employeDetails.name;
         profile_id = employeDetails._id;
 
         photo = employeDetails.photo;
       } else {
-        const clientDetails = await Clients.findOne({ credential: user._id });
+        const clientDetails = await Clients.findOne({ credential: user._id }).populate('photo');
         name = clientDetails.name;
         profile_id = clientDetails._id;
 
