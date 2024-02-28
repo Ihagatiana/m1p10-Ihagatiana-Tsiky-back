@@ -18,6 +18,25 @@ router.get("/", async (req, res) => {
   }
 });
 
+router.get("/appservices/:id", async (req, res) => {
+  try {
+    const paginationQuery = {
+      limit: req.query?.limit,
+      offset: req.query?.offset,
+    };
+    const clientId = req.params.id;
+
+    const appServices = await clientsService.getAppServices(
+      clientId ? { clients: clientId } : {},
+      paginationQuery
+    );
+    res.status(200).json(appServices);
+
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
 router.get("/:id", async (req, res) => {
   const clientsId = req.params.id;
   try {
@@ -30,7 +49,7 @@ router.get("/:id", async (req, res) => {
 
 router.post("/", upload.array("photos"), async (req, res) => {
   try {
-    const { name, firstname,credential } = req.body;
+    const { name, firstname, credential } = req.body;
     const imagesBuffers = req.files
       ? req.files.map((file) => file.buffer)
       : null;
@@ -49,25 +68,28 @@ router.post("/", upload.array("photos"), async (req, res) => {
   }
 });
 
-router.put("/:id", upload.array('photos'), async (req, res) => {
-    try {
-      const employeId = req.params.id;
-      const imagesBuffers = req.files ? req.files.map(file => file.buffer) : null; 
-      const newEmployee = {
-        name: req.body.name,
-        firstname: req.body.firstname, 
-        credential:req.body.credential
-      };
-      const file = req.files;
-      const updatedClients =  await clientsService.updateById(employeId,newEmployee);
-      res.status(200).send(updatedClients);
-    } catch (error) {
-      console.error(error);
-      res.status(500).send('Error updating clients.');
-    }
-  });
-  
-  
+router.put("/:id", upload.array("photos"), async (req, res) => {
+  try {
+    const employeId = req.params.id;
+    const imagesBuffers = req.files
+      ? req.files.map((file) => file.buffer)
+      : null;
+    const newEmployee = {
+      name: req.body.name,
+      firstname: req.body.firstname,
+      credential: req.body.credential,
+    };
+    const file = req.files;
+    const updatedClients = await clientsService.updateById(
+      employeId,
+      newEmployee
+    );
+    res.status(200).send(updatedClients);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Error updating clients.");
+  }
+});
 
 router.delete("/:id", async (req, res) => {
   const serviceId = req.params.id;
