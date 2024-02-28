@@ -32,7 +32,6 @@ router.get("/appservices/:id", async (req, res) => {
       paginationQuery
     );
     res.status(200).json(appServices);
-
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
@@ -69,27 +68,31 @@ router.post("/", upload.array("photos"), async (req, res) => {
   }
 });
 
-router.put("/:id", upload.array('photos'), async (req, res) => {
-    try {
-      const employeId = req.params.id;
-      const credential =  req.body.credential;
-      credential.password = bcrypt.hashSync(credential.password,10);
-      const imagesBuffers = req.files ? req.files.map(file => file.buffer) : null; 
-      const newEmployee = {
-        name: req.body.name,
-        firstname: req.body.firstname, 
-        credential:credential
-      };
-      const file = req.files;
-      const updatedClients =  await clientsService.updateById(employeId,newEmployee);
-      res.status(200).send(updatedClients);
-    } catch (error) {
-      console.error(error);
-      res.status(500).send('Error updating clients.');
-    }
-  });
-  
-  
+router.put("/:id", upload.array("photos"), async (req, res) => {
+  try {
+    const employeId = req.params.id;
+    const credential = req.body.credential;
+    if (credential?.password)
+      credential.password = bcrypt.hashSync(credential.password, 10);
+    const imagesBuffers = req.files
+      ? req.files.map((file) => file.buffer)
+      : null;
+    const newEmployee = {
+      name: req.body.name,
+      firstname: req.body.firstname,
+      credential: credential,
+    };
+    const file = req.files;
+    const updatedClients = await clientsService.updateById(
+      employeId,
+      newEmployee
+    );
+    res.status(200).send(updatedClients);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Error updating clients.");
+  }
+});
 
 router.delete("/:id", async (req, res) => {
   const serviceId = req.params.id;
