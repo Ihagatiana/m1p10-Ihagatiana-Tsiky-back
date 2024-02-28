@@ -7,6 +7,7 @@ const AppService = require("../appservices/appservices.model");
 const bcrypt = require("bcrypt");
 
 const findAppServicesByEmpId = async (query, { offset, limit }) => {
+  console.log(query);
   const data = await AppService.find(query)
     .populate({
       path: "appointments",
@@ -59,7 +60,7 @@ const create = async (
   const session = await mongoose.startSession();
   session.startTransaction();
   try {
-      credentialsData.password =  bcrypt.hashSync(credentialsData.password, 10);
+    credentialsData.password = bcrypt.hashSync(credentialsData.password, 10);
     const credential = await credentialsService.create(credentialsData, {
       session,
     });

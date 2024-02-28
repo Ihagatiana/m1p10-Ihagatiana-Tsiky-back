@@ -4,10 +4,14 @@ require("../credentials/credentials.model");
 const imagesService = require("../util/images/images.services");
 const credentialsService = require("../credentials/credentials.service");
 const AppService = require("../appservices/appservices.model");
+const Appointment = require("../appointments/appointments.model");
 const bcrypt = require("bcrypt");
 
 const getAppServices = async (query, { offset, limit }) => {
-  const data = await AppService.find({})
+  const appointments = await Appointment.find({ clients: query._id });
+  const data = await AppService.find({
+    appointments: { $in: appointments.map((a) => a._id) },
+  })
     .populate({
       path: "appointments",
       populate: {
@@ -23,7 +27,9 @@ const getAppServices = async (query, { offset, limit }) => {
     .skip(offset)
     .limit(limit);
 
-  const total = await AppService.count().populate({
+  const total = await AppService.count({
+    appointments: { $in: appointments.map((a) => a._id) },
+  }).populate({
     path: "appointments",
     populate: {
       path: "clients",
@@ -59,29 +65,40 @@ const findById = async (clientsId) => {
   }
 };
 
-  const create = async (name, firstname, imagesBuffers, file, credentialsData) => {
-    const session = await mongoose.startSession();
-    session.startTransaction();
-    try {
-      credentialsData.password =  bcrypt.hashSync(credentialsData.password, 10);
-      const credential = await credentialsService.create(credentialsData, { session });
-      const photo = await imagesService.saveImageToFolderAndDatabase(imagesBuffers, file);
-      const newclients = new Clients({
-        name: name,
-        firstname: firstname,
-        photo: photo,
-        credential: credential._id
-      });
-      await newclients.save({ session });
-      await session.commitTransaction();
-      session.endSession();
-      return newclients;
-    } catch (error) {
-      await session.abortTransaction();
-      session.endSession();
-      throw error;
-    }
-  };
+const create = async (
+  name,
+  firstname,
+  imagesBuffers,
+  file,
+  credentialsData
+) => {
+  const session = await mongoose.startSession();
+  session.startTransaction();
+  try {
+    credentialsData.password = bcrypt.hashSync(credentialsData.password, 10);
+    const credential = await credentialsService.create(credentialsData, {
+      session,
+    });
+    const photo = await imagesService.saveImageToFolderAndDatabase(
+      imagesBuffers,
+      file
+    );
+    const newclients = new Clients({
+      name: name,
+      firstname: firstname,
+      photo: photo,
+      credential: credential._id,
+    });
+    await newclients.save({ session });
+    await session.commitTransaction();
+    session.endSession();
+    return newclients;
+  } catch (error) {
+    await session.abortTransaction();
+    session.endSession();
+    throw error;
+  }
+};
 
 const updateById = async (clientsId, newclients) => {
   try {
@@ -109,4 +126,11 @@ const deleteById = async (clientsId) => {
   }
 };
 
-module.exports = { findAll, findById, create, updateById, deleteById, getAppServices };
+module.exports = {
+  findAll,
+  findById,
+  create,
+  updateById,
+  deleteById,
+  getAppServices,
+};

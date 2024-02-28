@@ -28,7 +28,7 @@ router.get("/appservices/:id", async (req, res) => {
     const clientId = req.params.id;
 
     const appServices = await clientsService.getAppServices(
-      clientId ? { clients: clientId } : {},
+      clientId ? { _id: clientId } : {},
       paginationQuery
     );
     res.status(200).json(appServices);
