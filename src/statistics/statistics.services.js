@@ -1,5 +1,65 @@
 const appServices = require("./../appservices/appservices.model");
 const Appointment = require("./../appointments/appointments.model");
+const moment = require("moment");
+
+const getAvgHoursPerEmp = async () => {
+  const appServ = await appServices.find().populate("employes");
+  const employeTotalTime = {};
+
+  // Parcours des appservices pour calculer le temps de travail de chaque employé
+  appServ.forEach((appservice) => {
+    const startTime = moment(
+      appservice.starttime.hours * 60 + appservice.starttime.minutes,
+      "HH:mm"
+    );
+    const endTime = moment(
+      appservice.endtime.hours * 60 + appservice.endtime.minutes,
+      "HH:mm"
+    );
+    const duration = moment.duration(endTime.diff(startTime));
+
+    const employeName = `${appservice.employes?.firstname ?? "N/A"} ${
+      appservice.employes?.name ?? "N/A"
+    }`;
+
+    // Si c'est la première fois qu'on voit cet employé, initialiser le temps de travail à 0
+    if (!employeTotalTime[employeName]) {
+      employeTotalTime[employeName] = moment.duration(0);
+    }
+
+    // Ajouter la durée de cet appservice au temps de travail total de l'employé
+    employeTotalTime[employeName].add(duration);
+  });
+
+  // Calcul du temps moyen de travail pour chaque employé
+  const employeAverageTime = [];
+  Object.keys(employeTotalTime).forEach((employeName) => {
+    const totalDuration = employeTotalTime[employeName];
+    const numberOfAppServices = appServ.filter(
+      (appservice) =>
+        `${appservice.employes?.firstname ?? "N/A"} ${
+          appservice.employes?.name ?? "N/A"
+        }` === employeName
+    ).length;
+    const averageDuration =
+      numberOfAppServices > 0
+        ? totalDuration.asMinutes() / numberOfAppServices
+        : 0;
+
+    // Conversion du temps moyen en objet { hours: string, minutes: string }
+    const averageHours = Math.floor(averageDuration / 60)
+      .toString()
+      .padStart(2, "0");
+    const averageMinutes = (averageDuration % 60).toFixed(0).padStart(2, "0");
+
+    employeAverageTime.push({
+      name: employeName,
+      avgTime: { hours: averageHours, minutes: averageMinutes },
+    });
+  });
+
+  return employeAverageTime;
+};
 const generateDatesForYear = (year) => {
   const dates = [];
   for (let month = 1; month <= 12; month++) {
@@ -70,104 +130,8 @@ const getEmployeStatistical = async () => {
   ]);
 };
 
-// const getHoursWorkedByEmploye = async () => {
-//   return await appServices.aggregate([
-//     {
-//       $lookup: {
-//         from: "appointments",
-//         localField: "appointments",
-//         foreignField: "_id",
-//         as: "appointmentDetails"
-//       }
-//     },
-//     {
-//       $unwind: "$appointmentDetails"
-//     },
-//     {
-//       $lookup: {
-//         from: "employes",
-//         localField: "employes",
-//         foreignField: "_id",
-//         as: "employeeDetails"
-//       }
-//     },
-//     {
-//       $unwind: "$employeeDetails"
-//     },
-//     {
-//       $addFields: {
-//         "totalMinutes": {
-//           $subtract: [
-//             {
-//               $add: [
-//                 { $multiply: ["$starttime.hours", 60] }, // Convertit les heures en minutes
-//                 "$starttime.minutes"
-//               ]
-//             },
-//             {
-//               $add: [
-//                 { $multiply: ["$endtime.hours", 60] }, // Convertit les heures en minutes
-//                 "$endtime.minutes"
-//               ]
-//             }
-//           ]
-//         }
-//       }
-//     },
-//     {
-//       $group: {
-//         _id: {
-//           appointmentDate: { $dateToString: { format: "%Y-%m-%d", date: "$appointmentDetails.date" } }, // Regrouper par date
-//           employeeId: "$employeeDetails._id" // Regrouper par identifiant de l'employé
-//         },
-//         totalWorkMinutes: { $sum: "$totalMinutes" } // Somme des minutes travaillées pour chaque employé par date
-//       }
-//     },
-//     {
-//       $addFields: {
-//         totalWorkHours: { $divide: ["$totalWorkMinutes", 60] } // Convertit les minutes en heures
-//       }
-//     },
-//     {
-//       $group: {
-//         _id: { appointmentDate: "$_id.appointmentDate" }, // Regrouper par date uniquement
-//         employees: {
-//           $push: {
-//             employeeId: "$_id.employeeId",
-//             totalWorkHours: "$totalWorkHours"
-//           }
-//         }
-//       }
-//     },
-//     {
-//       $lookup: {
-//         from: "employes",
-//         localField: "employees.employeeId",
-//         foreignField: "_id",
-//         as: "employeeInfo"
-//       }
-//     },
-//     {
-//       $unwind: "$employeeInfo"
-//     },
-//     {
-//       $project: {
-//         _id: "$_id.appointmentDate",
-//         employees: {
-//           firstName: "$employeeInfo.firstName",
-//           lastName: "$employeeInfo.lastName",
-//           totalWorkHours: 1
-//         }
-//       }
-//     },
-//     {
-//       $sort: { "_id": 1 } // Trier par date croissante
-//     }
-//   ]);
-// };
-
 module.exports = {
   getEmployeStatistical,
   getAppointementByDate,
-  //   getHoursWorkedByEmploye,
+  getAvgHoursPerEmp,
 };
