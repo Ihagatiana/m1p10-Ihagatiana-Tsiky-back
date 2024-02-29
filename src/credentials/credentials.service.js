@@ -17,7 +17,7 @@ const login = async (email, password) => {
 
     if (user && bcrypt.compareSync(password, user.password)) {
       console.log("ato2");
-      const token = jwt.sign({ userId: user._id },process.env.jwt, {
+      const token = jwt.sign({ userId: user._id },process.env.JWT, {
         expiresIn: "1h",
       });
 
