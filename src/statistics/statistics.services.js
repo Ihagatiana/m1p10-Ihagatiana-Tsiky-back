@@ -1,5 +1,6 @@
 const appServices = require("./../appservices/appservices.model");
 const Appointment = require("./../appointments/appointments.model");
+const Payments = require("./../payments/payments.model");
 const moment = require("moment");
 
 const getAvgHoursPerEmp = async () => {
@@ -68,6 +69,47 @@ const generateDatesForYear = (year) => {
   }
   return dates;
 };
+
+const getCaPerMonth = async () => {
+  const dates = generateDatesForYear(2024);
+
+  const caPerMonth = [];
+  for (const date of dates) {
+    const [year, month] = date.split("-");
+    const startOfMonth = new Date(year, parseInt(month) - 1, 1);
+    const endOfMonth = new Date(year, parseInt(month), 0, 23, 59, 59, 999);
+
+    const payments = await Payments.find({
+      date: { $gte: startOfMonth, $lt: endOfMonth },
+    });
+
+    const ca = payments.reduce((acc, obj) => acc + obj.amount, 0);
+
+    caPerMonth.push({ date, ca });
+  }
+
+  return caPerMonth;
+};
+
+const getBenefitsPerMonth = async ({ salary, rent, purchases, expenses }) => {
+  const dates = generateDatesForYear(2024);
+
+  const caPerMonth = [];
+  for (const date of dates) {
+    const [year, month] = date.split("-");
+    const startOfMonth = new Date(year, parseInt(month) - 1, 1);
+    const endOfMonth = new Date(year, parseInt(month), 0, 23, 59, 59, 999);
+
+    const payments = await Payments.find({
+      date: { $gte: startOfMonth, $lt: endOfMonth },
+    });
+
+    const expensesSum = salary + rent + purchases + expenses;
+    const ca = payments.reduce((acc, obj) => acc + obj.amount, 0) - expensesSum;
+    caPerMonth.push({ date, ca: Math.max(0, ca) });
+  }
+  return caPerMonth;
+};
 const getAppointementByDate = async () => {
   const year = 2024;
 
@@ -109,7 +151,7 @@ const getEmployeStatistical = async () => {
     },
     {
       $lookup: {
-        from: "employes", // Collection à partir de laquelle vous souhaitez récupérer les détails des employés
+        from: "employes", // Collection à partir de laquelle on récupère les détails des employés
         localField: "employes",
         foreignField: "_id",
         as: "employeDetails", // Alias pour stocker les détails des employés
@@ -134,4 +176,6 @@ module.exports = {
   getEmployeStatistical,
   getAppointementByDate,
   getAvgHoursPerEmp,
+  getCaPerMonth,
+  getBenefitsPerMonth,
 };
