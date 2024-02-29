@@ -130,7 +130,7 @@ require('../clients/clients.model');
             const servAppId = idAppointmentTab[i];
             const appservices = await AppServices.findById(new mongoose.Types.ObjectId(servAppId));
             if (appservices) {
-              appservices.states = 11;
+              appservices.states = 5;
               await appservices.save();
             }
           }
