@@ -4,6 +4,7 @@ const AppServices = require("../appservices/appservices.model");
 require("../employes/employes.model");
 require("../managers/managers.model");
 const mongoose = require("mongoose");
+const Services = require('../services/services.model');
 
 const findAll = async ({ limit, offset }) => {
   try {
@@ -49,24 +50,26 @@ const findByClientId = async (clientId, { limit, offset }) => {
   const total = await Payments.count({ clients: { _id: clientId } });
   return { total, data: payments };
 };
+
 const create = async (dates, clients, appservices) => {
   try {
     const date = new Date(dates);
     const clientsId = new mongoose.Types.ObjectId(clients);
     const appservicesId = new mongoose.Types.ObjectId(appservices);
+    const services = await Services.findById(appservicesId);
     const paymentsData = {
       date: date,
       clients: clientsId,
       appservices: appservicesId,
+      amount : services.price
     };
     const newPayments = new Payments(paymentsData);
     const savedPayments = await newPayments.save();
 
     await AppServices.updateOne(
       { _id: appservicesId },
-      { $set: { states: 11 } }
+      { $set: { states: 11 }}
     );
-
     return savedPayments;
   } catch (error) {
     throw error;
