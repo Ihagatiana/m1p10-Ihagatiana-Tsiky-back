@@ -56,7 +56,8 @@ const create = async (dates, clients, appservices) => {
     const date = new Date(dates);
     const clientsId = new mongoose.Types.ObjectId(clients);
     const appservicesId = new mongoose.Types.ObjectId(appservices);
-    const services = await Services.findById(appservicesId);
+    const appservData  =  await AppServices.findById(appservicesId);
+    const services = await Services.findById(appservData.services);
     const paymentsData = {
       date: date,
       clients: clientsId,
