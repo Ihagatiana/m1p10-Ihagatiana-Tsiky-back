@@ -5,6 +5,7 @@ require("../employes/employes.model");
 require("../managers/managers.model");
 const mongoose = require("mongoose");
 const Services = require('../services/services.model');
+const Offres = require('../offres/offres.model');
 
 const findAll = async ({ limit, offset }) => {
   try {
@@ -54,15 +55,32 @@ const findByClientId = async (clientId, { limit, offset }) => {
 const create = async (dates, clients, appservices) => {
   try {
     const date = new Date(dates);
+    date.setHours(0, 0, 0, 0);
     const clientsId = new mongoose.Types.ObjectId(clients);
     const appservicesId = new mongoose.Types.ObjectId(appservices);
-    const appservData  =  await AppServices.findById(appservicesId);
+    const appservData = await AppServices.findById(appservicesId).populate('appointments');
     const services = await Services.findById(appservData.services);
+    const date_rdv = appservData.appointments.date;
+
+    console.log("type===>"+ appservData.appointments.date);
+    let date_rdv2 = new Date(date_rdv);
+
+    console.log("date_rdv==>"+date_rdv2);
+    console.log("services==>"+ services._id);
+    const offres = await Offres.findOne({ date_rdv2, services:services._id });
+  
+    const prix = services.price;
+    if(offres){
+      prix = prix - (prix * offres.percentage / 100); 
+      console.log("cette service a un reduction de: "+offres.percentage+"%");
+    }
+    console.log("valeur prix==>"+prix);
+
     const paymentsData = {
       date: date,
       clients: clientsId,
       appservices: appservicesId,
-      amount : services.price
+      amount : prix
     };
     const newPayments = new Payments(paymentsData);
     const savedPayments = await newPayments.save();

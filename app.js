@@ -54,6 +54,11 @@ async function initializeApp() {
       appointmentsController(req, res, next);
     });
 
+    app.use("/offres", async (req, res, next) => {
+      const offresController = require("./src/offres/offres.controller");
+      offresController(req, res, next);
+    });
+
     app.use("/payments", async (req, res, next) => {
       const paymentsController = require("./src/payments/payments.controller");
       paymentsController(req, res, next);

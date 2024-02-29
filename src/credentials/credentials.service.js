@@ -1,5 +1,5 @@
 const Credentials = require("./credentials.model");
-
+const Managers = require("../managers/managers.model");
 const Employes = require("../employes/employes.model");
 const Clients = require("../clients/clients.model");
 require("dotenv").config();
@@ -11,9 +11,6 @@ require('../util/images/images.model');
 const login = async (email, password) => {
   try {
     const user = await Credentials.findOne({ email });
-
-    console.log("comparaison", password);
-    console.log("et", user.password);
 
     if (user && bcrypt.compareSync(password, user.password)) {
       console.log("ato2");
@@ -28,6 +25,7 @@ const login = async (email, password) => {
       let profile_id = "";
 
       if (user.roles === "manager") {
+        console.log(user);
         const managerDetails = await Managers.findOne({ credential: user._id }).populate('photo');
         name = managerDetails.name;
         profile_id = managerDetails._id;
